@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <assert.h>
+
 void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, const float* weights, const float* biases, float* output);
 
 void CNN_ConvLayerForward(size_t inputChannels, size_t inputWidth, size_t inputHeight, size_t outputChannels, size_t kernelWidth, size_t kernelHeight, int stride, int padding, const float* input, const float* weights, const float* biases, float* output);
