@@ -6,7 +6,6 @@
 #define CNN_CNN_H
 
 #include <stddef.h>
-#include <assert.h>
 
 void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, const float* weights, const float* biases, float* output);
 

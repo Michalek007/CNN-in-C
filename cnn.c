@@ -1,6 +1,7 @@
 //
 // Created by Michał on 15.10.2024.
 //
+#include <assert.h>
 #include "cnn.h"
 
 void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, const float* weights, const float* biases, float* output){
@@ -30,7 +31,6 @@ void CNN_ConvLayerForward(size_t inputChannels, size_t inputWidth, size_t inputH
                         }
                     }
                 }
-//                o*outputWidth*outputHeight+i*outputWidth+j
                 output[o*outputWidth*outputHeight+i*outputWidth + j] = outputValue + biases[o];
             }
         }
