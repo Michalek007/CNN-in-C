@@ -22,6 +22,8 @@ int main() {
     CNNTest_Conv7();
     CNNTest_Conv8();
     CNNTest_Conv9();
+    CNNTest_Conv_0();
+    CNNTest_Conv_1();
     CNNTest_ReLU();
     CNNTest_MaxPoolDefault0();
     CNNTest_MaxPoolDefault1();
@@ -29,6 +31,8 @@ int main() {
     CNNTest_MaxPoolDefault3();
     CNNTest_MaxPool0();
     CNNTest_MaxPool1();
+    CNNTest_MaxPool_0();
+    CNNTest_MaxPool_1();
 
     CNNTest_FashionMnist();
     CNNTest_FashionMnist1();

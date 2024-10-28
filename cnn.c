@@ -16,22 +16,21 @@ void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, c
    }
 }
 
-void CNN_ConvLayerForward(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernelHeight, size_t kernelWidth,
-                          int stride, int padding, const float* input, const float* weights, const float* biases, float* output){
-    size_t outputHeight = (inputHeight-kernelHeight+2*padding)/stride+1;
-    size_t outputWidth = (inputWidth-kernelWidth+2*padding)/stride+1;
+void CNN_ConvLayerForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, const float* input, const float* weights, const float* biases, float* output){
+    size_t outputHeight = (inputHeight-kernelHeight+2*paddingH)/strideH+1;
+    size_t outputWidth = (inputWidth-kernelWidth+2*paddingW)/strideW+1;
     assert(outputHeight>0);
     assert(outputWidth>0);
 
-    if (padding != 0){
-        int newHeight = inputHeight+2*padding;
-        int newWidth = inputWidth+2*padding;
+    if (paddingH != 0 || paddingW != 0){
+        int newHeight = inputHeight+2*paddingH;
+        int newWidth = inputWidth+2*paddingW;
         size_t newInputSize = newHeight*newWidth*sizeof(float);
         float *newInput = (float*) malloc(newInputSize);
         memset(newInput, 0, newInputSize);
 
         for (int i=0;i<inputHeight;i++){
-            memcpy(newInput+newWidth+padding+i*newWidth, input+i*inputWidth, inputWidth*sizeof(float));
+            memcpy(newInput+(newWidth*paddingH)+paddingW+i*newWidth, input+i*inputWidth, inputWidth*sizeof(float));
         }
 
         input = newInput;
@@ -47,7 +46,7 @@ void CNN_ConvLayerForward(size_t inputChannels, size_t inputHeight, size_t input
                     for (size_t k=0;k<kernelHeight;k++){
                         for (size_t l=0;l<kernelWidth;l++){
                             int weightsIndex = o*kernelWidth*kernelHeight*inputChannels + p*kernelWidth*kernelHeight + k*kernelWidth +l;
-                            int inputIndex = p*inputHeight*inputWidth + (i*stride+k)*inputWidth + j*stride + l;
+                            int inputIndex = p*inputHeight*inputWidth + (i*strideH+k)*inputWidth + j*strideW + l;
                             outputValue += input[inputIndex] * weights[weightsIndex];
                         }
                     }
@@ -57,6 +56,11 @@ void CNN_ConvLayerForward(size_t inputChannels, size_t inputHeight, size_t input
             }
         }
     }
+}
+
+void CNN_ConvLayerForward(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernelHeight, size_t kernelWidth,
+                          int stride, int padding, const float* input, const float* weights, const float* biases, float* output){
+    CNN_ConvLayerForward_(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, stride, padding, padding, input, weights, biases, output);
 }
 
 void CNN_ConvLayerForwardDefault(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernel, const float* input, const float* weights, const float* biases, float* output){
@@ -74,22 +78,21 @@ void CNN_ReLU(size_t inputLen, const float* input, float* output){
     }
 }
 
-void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output){
-    size_t outputHeight = (inputHeight-kernelHeight+2*padding)/stride+1;
-    size_t outputWidth = (inputWidth-kernelWidth+2*padding)/stride+1;
+void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, const float* input, float* output){
+    size_t outputHeight = (inputHeight-kernelHeight+2*paddingH)/strideH+1;
+    size_t outputWidth = (inputWidth-kernelWidth+2*paddingW)/strideW+1;
     assert(outputHeight>0);
     assert(outputWidth>0);
 
-    if (padding != 0){
-        int newHeight = inputHeight+2*padding;
-        int newWidth = inputWidth+2*padding;
+    if (paddingH != 0 || paddingW != 0){
+        int newHeight = inputHeight+2*paddingH;
+        int newWidth = inputWidth+2*paddingW;
         size_t newInputSize = newHeight*newWidth*sizeof(float);
         float *newInput = (float*) malloc(newInputSize);
-        // #include <float.h> FLT_MIN
         memset(newInput, 0, newInputSize);
 
         for (int i=0;i<inputHeight;i++){
-            memcpy(newInput+newWidth+padding+i*newWidth, input+i*inputWidth, inputWidth*sizeof(float));
+            memcpy(newInput+(newWidth*paddingH)+paddingW+i*newWidth, input+i*inputWidth, inputWidth*sizeof(float));
         }
 
         input = newInput;
@@ -103,7 +106,7 @@ void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWi
                 float maxValue = 0;
                 for (size_t k=0;k<kernelHeight;k++){
                     for (size_t l=0;l<kernelWidth;l++){
-                        int inputIndex = o*inputHeight*inputWidth + (i*stride+k)*inputWidth + j*stride + l;
+                        int inputIndex = o*inputHeight*inputWidth + (i*strideH+k)*inputWidth + j*strideW + l;
                         float targetValue = input[inputIndex];
                         if (maxValue < targetValue || (k == 0 && l == 0)){
                             maxValue = targetValue;
@@ -115,6 +118,10 @@ void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWi
             }
         }
     }
+}
+
+void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output){
+    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, stride, padding, padding, input, output);
 }
 
 void CNN_MaxPoolForwardDefault(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output){
