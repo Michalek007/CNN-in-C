@@ -20,11 +20,18 @@ void CNNTest_Conv1();
 void CNNTest_Conv2();
 void CNNTest_Conv3();
 void CNNTest_Conv4();
+void CNNTest_Conv5();
+void CNNTest_Conv6();
+void CNNTest_Conv7();
+void CNNTest_Conv8();
+void CNNTest_Conv9();
 void CNNTest_ReLU();
 void CNNTest_MaxPoolDefault0();
 void CNNTest_MaxPoolDefault1();
 void CNNTest_MaxPoolDefault2();
 void CNNTest_MaxPoolDefault3();
+void CNNTest_MaxPool0();
+void CNNTest_MaxPool1();
 
 void CNNTest_FashionMnist();
 void CNNTest_FashionMnist1();
