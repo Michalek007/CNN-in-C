@@ -36,6 +36,8 @@ void CNNTest_MaxPool0();
 void CNNTest_MaxPool1();
 void CNNTest_MaxPool_0();
 void CNNTest_MaxPool_1();
+void CNNTest_PReLU0();
+void CNNTest_PReLU1();
 
 void CNNTest_FashionMnist();
 void CNNTest_FashionMnist1();

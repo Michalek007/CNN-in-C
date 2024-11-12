@@ -33,6 +33,8 @@ int main() {
     CNNTest_MaxPool1();
     CNNTest_MaxPool_0();
     CNNTest_MaxPool_1();
+    CNNTest_PReLU0();
+    CNNTest_PReLU1();
 
     CNNTest_FashionMnist();
     CNNTest_FashionMnist1();

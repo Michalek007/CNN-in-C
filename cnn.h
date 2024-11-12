@@ -23,5 +23,6 @@ void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWi
 
 void CNN_MaxPoolForwardDefault(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output);
 
+void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, const float* weights, float* output);
 
 #endif //CNN_CNN_H

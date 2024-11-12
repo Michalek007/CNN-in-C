@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 #include "cnn.h"
 
 void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, const float* weights, const float* biases, float* output){
@@ -79,8 +80,12 @@ void CNN_ReLU(size_t inputLen, const float* input, float* output){
 }
 
 void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, const float* input, float* output){
-    size_t outputHeight = (inputHeight-kernelHeight+2*paddingH)/strideH+1;
-    size_t outputWidth = (inputWidth-kernelWidth+2*paddingW)/strideW+1;
+    size_t outputHeight = floor((inputHeight-kernelHeight+2*paddingH)/strideH+1);
+    size_t outputWidth = floor((inputWidth-kernelWidth+2*paddingW)/strideW+1);
+//    if (ceilMode){ // padding must be done properly -> adding right and bottom padding properly
+//        size_t outputHeight = ceil((inputHeight-kernelHeight+2*paddingH)/strideH+1);
+//        size_t outputWidth = ceil((inputWidth-kernelWidth+2*paddingW)/strideW+1);
+//    }
     assert(outputHeight>0);
     assert(outputWidth>0);
 
@@ -126,4 +131,18 @@ void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWi
 
 void CNN_MaxPoolForwardDefault(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output){
     CNN_MaxPoolForward(inputChannels, inputHeight, inputWidth, kernel, kernel, (int)kernel, 0, input, output);
+}
+
+void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, const float* weights, float* output){
+    for (size_t o=0;o<inputChannels;++o){
+        for (size_t i=0;i<inputHeight;++i){
+            for (size_t j=0;j<inputWidth;++j){
+                size_t index = o*inputHeight*inputWidth + i*inputWidth + j;
+                float a = 1;
+                if (input[index] < 0)
+                    a = weights[o];
+                output[index] = a * input[index];
+            }
+        }
+    }
 }

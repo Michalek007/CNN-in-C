@@ -654,4 +654,36 @@ void CNNTest_MaxPool_1(){
     }
 }
 
+void CNNTest_PReLU0(){
+    size_t inputChannels = 2;
+    size_t inputHeight = 2;
+    size_t inputWidth = 6;
+
+    const float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    const float weights[] = {0.25, 0.25};
+    float output[24];
+    CNN_PReLU(inputChannels, inputHeight, inputWidth, input, weights, output);
+    float expectedOutput[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    for (size_t i=0;i<24;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloatDefault(output[i], expectedOutput[i]));
+    }
+}
+
+void CNNTest_PReLU1(){
+    size_t inputChannels = 2;
+    size_t inputHeight = 2;
+    size_t inputWidth = 6;
+
+    const float input[] = {1.0, 2.0, 3.0, -4.0, -5.0, -6.0, -1.0, -2.0, -3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, -4.0, -5.0, -6.0};
+    const float weights[] = {0.25, 0.25};
+    float output[24];
+    CNN_PReLU(inputChannels, inputHeight, inputWidth, input, weights, output);
+    float expectedOutput[] = {1.0, 2.0, 3.0, -1.0, -1.25, -1.5, -0.25, -0.5, -0.75, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, -1.0, -1.25, -1.5};
+    for (size_t i=0;i<24;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloatDefault(output[i], expectedOutput[i]));
+    }
+}
+
 #pragma clang diagnostic pop
