@@ -159,36 +159,47 @@ void CNN_Softmax(size_t inputLen, const float* input, float* output){
 }
 
 void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t dim, const float* input, float* output){
-    size_t firstLoop = inputHeight;
-    size_t secondLoop = inputWidth;
-    if (dim == 1){
-        firstLoop = inputWidth;
-        secondLoop = inputHeight;
+    size_t firstLoop = inputChannels;
+    size_t secondLoop = inputHeight;
+    size_t thirdLoop = inputWidth;
+    if (dim == 0){
+        firstLoop = inputHeight;
+        secondLoop = inputWidth;
+        thirdLoop = inputChannels;
+    }
+    else if (dim == 1){
+        firstLoop = inputChannels;
+        secondLoop = inputWidth;
+        thirdLoop = inputHeight;
     }
 
-    for (size_t o=0;o<inputChannels;++o){
-        for (size_t i=0;i<firstLoop;++i){
+
+    for (size_t o=0;o<firstLoop;++o){
+        for (size_t i=0;i<secondLoop;++i){
             float sum = 0;
-            for (size_t j=0;j<secondLoop;++j){
-                size_t index = o*inputHeight*inputWidth;
-                if (dim == 1){
-                    index +=  j*inputWidth + i;
+            size_t step = 0;
+            while (step<2){
+                for (size_t j=0;j<thirdLoop;++j){
+                    size_t index;
+                    if (dim == 0){
+                        index =  j*inputHeight*inputWidth + o*inputWidth + i;
+                    }
+                    else if (dim == 1){
+                        index =  o*inputHeight*inputWidth + j*inputWidth + i;
+                    }
+                    else{
+                        index =  o*inputHeight*inputWidth + i*inputWidth + j;
+                    }
+
+                    if (step == 0){
+                        output[index] = expf(input[index]);
+                        sum += output[index];
+                    }
+                    else if (step == 1){
+                        output[index] = output[index] / sum;
+                    }
                 }
-                else{
-                    index +=  i*inputWidth + j;
-                }
-                output[index] = expf(input[index]);
-                sum += output[index];
-            }
-            for (size_t j=0;j<secondLoop;++j) {
-                size_t index = o*inputHeight*inputWidth;
-                if (dim == 1){
-                    index +=  j*inputWidth + i;
-                }
-                else{
-                    index +=  i*inputWidth + j;
-                }
-                output[index] = output[index] / sum;
+                ++step;
             }
         }
     }

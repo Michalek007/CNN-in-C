@@ -42,5 +42,6 @@ void CNNTest_PReLU1();
 void CNNTest_Softmax0();
 void CNNTest_Softmax2D0();
 void CNNTest_Softmax2D1();
+void CNNTest_Softmax2D2();
 
 #endif //CNN_CNN_TEST_H

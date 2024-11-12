@@ -39,9 +39,12 @@ int main() {
     CNNTest_Softmax0();
     CNNTest_Softmax2D0();
     CNNTest_Softmax2D1();
+    CNNTest_Softmax2D2();
 
     CNNTest_FashionMnist();
     CNNTest_FashionMnist1();
     CNNTest_FashionMnist2();
+    CNNTest_FashionMnist3();
+    CNNTest_PNet0();
     return 0;
 }

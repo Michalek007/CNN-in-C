@@ -8,5 +8,7 @@
 void CNNTest_FashionMnist();
 void CNNTest_FashionMnist1();
 void CNNTest_FashionMnist2();
+void CNNTest_FashionMnist3();
+void CNNTest_PNet0();
 
 #endif //CNN_CNN_TEST_NETWORKS_H
