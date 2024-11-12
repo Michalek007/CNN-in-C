@@ -5,11 +5,12 @@
 #ifndef CNN_CNN_TEST_H
 #define CNN_CNN_TEST_H
 
-#include <stdio.h>
-
-#include "cnn.h"
+#include <stdbool.h>
 
 void CNNTest_Dev();
+
+bool equalFloat(float x, float y, float margin);
+bool equalFloatDefault(float x, float y);
 
 void CNNTest_FcLayer0();
 void CNNTest_FcLayer1();
@@ -38,9 +39,8 @@ void CNNTest_MaxPool_0();
 void CNNTest_MaxPool_1();
 void CNNTest_PReLU0();
 void CNNTest_PReLU1();
-
-void CNNTest_FashionMnist();
-void CNNTest_FashionMnist1();
-void CNNTest_FashionMnist2();
+void CNNTest_Softmax0();
+void CNNTest_Softmax2D0();
+void CNNTest_Softmax2D1();
 
 #endif //CNN_CNN_TEST_H

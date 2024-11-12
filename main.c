@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "cnn.h"
 #include "cnn_test.h"
+#include "cnn_test_networks.h"
 
 
 int main() {
@@ -35,6 +36,9 @@ int main() {
     CNNTest_MaxPool_1();
     CNNTest_PReLU0();
     CNNTest_PReLU1();
+    CNNTest_Softmax0();
+    CNNTest_Softmax2D0();
+    CNNTest_Softmax2D1();
 
     CNNTest_FashionMnist();
     CNNTest_FashionMnist1();

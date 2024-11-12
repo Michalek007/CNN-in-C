@@ -146,3 +146,50 @@ void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, cons
         }
     }
 }
+
+void CNN_Softmax(size_t inputLen, const float* input, float* output){
+    float sum = 0;
+    for (size_t i=0;i<inputLen;++i){
+        output[i] = expf(input[i]);
+        sum += output[i];
+    }
+    for (size_t i=0;i<inputLen;++i){
+        output[i] = output[i] / sum;
+    }
+}
+
+void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t dim, const float* input, float* output){
+    size_t firstLoop = inputHeight;
+    size_t secondLoop = inputWidth;
+    if (dim == 1){
+        firstLoop = inputWidth;
+        secondLoop = inputHeight;
+    }
+
+    for (size_t o=0;o<inputChannels;++o){
+        for (size_t i=0;i<firstLoop;++i){
+            float sum = 0;
+            for (size_t j=0;j<secondLoop;++j){
+                size_t index = o*inputHeight*inputWidth;
+                if (dim == 1){
+                    index +=  j*inputWidth + i;
+                }
+                else{
+                    index +=  i*inputWidth + j;
+                }
+                output[index] = expf(input[index]);
+                sum += output[index];
+            }
+            for (size_t j=0;j<secondLoop;++j) {
+                size_t index = o*inputHeight*inputWidth;
+                if (dim == 1){
+                    index +=  j*inputWidth + i;
+                }
+                else{
+                    index +=  i*inputWidth + j;
+                }
+                output[index] = output[index] / sum;
+            }
+        }
+    }
+}
