@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 #include "cnn.h"
 
 void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, const float* weights, const float* biases, float* output){
@@ -26,12 +27,15 @@ void CNN_ConvLayerForward_(size_t inputChannels, size_t inputHeight, size_t inpu
     if (paddingH != 0 || paddingW != 0){
         int newHeight = inputHeight+2*paddingH;
         int newWidth = inputWidth+2*paddingW;
-        size_t newInputSize = newHeight*newWidth*sizeof(float);
+        size_t newInputSize = inputChannels*newHeight*newWidth*sizeof(float);
         float *newInput = (float*) malloc(newInputSize);
+        assert(newInput != NULL);
         memset(newInput, 0, newInputSize);
 
-        for (int i=0;i<inputHeight;i++){
-            memcpy(newInput+(newWidth*paddingH)+paddingW+i*newWidth, input+i*inputWidth, inputWidth*sizeof(float));
+        for (size_t o=0;o<inputChannels;++o){
+            for (int i=0;i<inputHeight;i++){
+                memcpy(newInput+o*newWidth*newHeight+(newWidth*paddingH)+paddingW+i*newWidth, input+o*inputWidth*inputHeight+i*inputWidth, inputWidth*sizeof(float));
+            }
         }
 
         input = newInput;
@@ -102,14 +106,20 @@ void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputW
     if (paddingH != 0 || paddingW != 0 || paddingRight !=0 || paddingBottom != 0){
         int newHeight = inputHeight+2*paddingH + paddingBottom;
         int newWidth = inputWidth+2*paddingW + paddingRight;
-        size_t newInputSize = newHeight*newWidth*sizeof(float);
+        size_t newInputSize = inputChannels*newHeight*newWidth*sizeof(float);
         float *newInput = (float*) malloc(newInputSize);
+        assert(newInput != NULL);
         memset(newInput, 0, newInputSize);
 
-        for (int i=0;i<inputHeight;i++){
-            memcpy(newInput+(newWidth*paddingH)+paddingW+i*newWidth, input+i*inputWidth, inputWidth*sizeof(float));
+        for (size_t i=0;i<inputChannels*newHeight*newWidth;i++){
+            newInput[i] = -FLT_MAX;
         }
 
+        for (size_t o=0;o<inputChannels;++o){
+            for (size_t i=0;i<inputHeight;i++){
+                memcpy(newInput+o*newWidth*newHeight+(newWidth*paddingH)+paddingW+i*newWidth, input+o*inputWidth*inputHeight+i*inputWidth, inputWidth*sizeof(float));
+            }
+        }
         input = newInput;
         inputHeight = newHeight;
         inputWidth = newWidth;
@@ -215,6 +225,73 @@ void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, 
     }
 }
 
-void CNN_Permute(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t outputHeight, size_t outputWidth, const float* input, float* output){
+void CNN_Permute(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannelsDim, size_t outputHeightDim, size_t outputWidthDim, const float* input, float* output){
+//    for (size_t o=0;o<inputChannels;++o){
+//        for (size_t i=0;i<inputHeight;++i){
+//            for (size_t j=0;j<inputWidth;++j){
+//                size_t inputIndex = o*inputHeight*inputWidth + i*inputWidth + j;
+//                size_t outputIndex = o*inputHeight*inputWidth + i*inputWidth + j;
+//            }
+//        }
+//    }
+    size_t outputChannels = inputChannels;
+    size_t outputHeight = inputHeight;
+    size_t outputWidth = inputWidth;
+    if (outputChannelsDim == 2){
+        outputChannels = inputWidth;
+    }
+    else if (outputChannelsDim == 1){
+        outputChannels = inputHeight;
+    }
 
+    if (outputHeightDim == 2){
+        outputHeight = inputWidth;
+    }
+    else if (outputHeightDim == 0){
+        outputHeight = inputChannels;
+    }
+
+    if (outputWidthDim == 1){
+        outputWidth = inputHeight;
+    }
+    else if (outputWidthDim == 0){
+        outputWidth = inputChannels;
+    }
+
+
+    for (size_t o=0;o<outputChannels;++o){
+        for (size_t i=0;i<outputHeight;++i){
+            for (size_t j=0;j<outputWidth;++j){
+                size_t factor_o, factor_i, factor_j;
+                factor_o = o;
+                factor_i = i;
+                factor_j = j;
+
+                if (outputChannelsDim == 2){
+                    factor_o = j;
+                }
+                else if (outputChannelsDim == 1){
+                    factor_o = i;
+                }
+
+                if (outputHeightDim == 2){
+                    factor_i = j;
+                }
+                else if (outputHeightDim == 0){
+                    factor_i = o;
+                }
+
+                if (outputWidthDim == 1){
+                    factor_j = i;
+                }
+                else if (outputWidthDim == 0){
+                    factor_j = o;
+                }
+
+                size_t outputIndex = o*outputHeight*outputWidth + i*outputWidth + j;
+                size_t inputIndex = factor_o*inputHeight*inputWidth + factor_i*inputWidth + factor_j;
+                output[outputIndex] = input[inputIndex];
+            }
+        }
+    }
 }

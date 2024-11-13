@@ -25,6 +25,7 @@ int main() {
     CNNTest_Conv9();
     CNNTest_Conv_0();
     CNNTest_Conv_1();
+    CNNTest_Conv_2();
     CNNTest_ReLU();
     CNNTest_MaxPoolDefault0();
     CNNTest_MaxPoolDefault1();
@@ -36,12 +37,17 @@ int main() {
     CNNTest_MaxPool_1();
     CNNTest_MaxPool_2();
     CNNTest_MaxPool_3();
+    CNNTest_MaxPool_4();
+    CNNTest_MaxPool_5();
     CNNTest_PReLU0();
     CNNTest_PReLU1();
     CNNTest_Softmax0();
     CNNTest_Softmax2D0();
     CNNTest_Softmax2D1();
     CNNTest_Softmax2D2();
+    CNNTest_Permute0();
+    CNNTest_Permute1();
+//    CNNTest_Permute2();
 
     CNNTest_FashionMnist();
     CNNTest_FashionMnist1();

@@ -28,6 +28,7 @@ void CNNTest_Conv8();
 void CNNTest_Conv9();
 void CNNTest_Conv_0();
 void CNNTest_Conv_1();
+void CNNTest_Conv_2();
 void CNNTest_ReLU();
 void CNNTest_MaxPoolDefault0();
 void CNNTest_MaxPoolDefault1();
@@ -39,11 +40,16 @@ void CNNTest_MaxPool_0();
 void CNNTest_MaxPool_1();
 void CNNTest_MaxPool_2();
 void CNNTest_MaxPool_3();
+void CNNTest_MaxPool_4();
+void CNNTest_MaxPool_5();
 void CNNTest_PReLU0();
 void CNNTest_PReLU1();
 void CNNTest_Softmax0();
 void CNNTest_Softmax2D0();
 void CNNTest_Softmax2D1();
 void CNNTest_Softmax2D2();
+void CNNTest_Permute0();
+void CNNTest_Permute1();
+void CNNTest_Permute2();
 
 #endif //CNN_CNN_TEST_H
