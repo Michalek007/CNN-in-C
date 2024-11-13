@@ -132,13 +132,13 @@ void CNNTest_FashionMnist3(){
     float output2[2304];
     CNN_ReLU(2304, output1, output2);
     float output3[576];
-    CNN_MaxPoolForward_(4, 24, 24, 2, 2, 2, 2, 0, 0, output2, output3);
+    CNN_MaxPoolForward_(4, 24, 24, 2, 2, 2, 2, 0, 0, 0, output2, output3);
     float output4[256];
     CNN_ConvLayerForward_(4, 12, 12, 4, 5, 5, 1, 1, 0, 0, output3, weight1, bias1, output4);
     float output5[256];
     CNN_ReLU(256, output4, output5);
     float output6[64];
-    CNN_MaxPoolForward_(4, 8, 8, 2, 2, 2, 2, 0, 0, output5, output6);
+    CNN_MaxPoolForward_(4, 8, 8, 2, 2, 2, 2, 0, 0, 0, output5, output6);
     float output7[64];
     CNN_FcLayerForward(64, 64, output6, weight2, bias2, output7);
     float output8[64];
@@ -172,7 +172,7 @@ void CNNTest_PNet0(){
     float output2[6760];
     CNN_PReLU(10, 26, 26, output1, weight1, output2);
     float output3[1690];
-    CNN_MaxPoolForward_(10, 26, 26, 2, 2, 2, 2, 0, 0, output2, output3);
+    CNN_MaxPoolForward_(10, 26, 26, 2, 2, 2, 2, 0, 0, 1, output2, output3);
     float output4[1936];
     CNN_ConvLayerForward_(10, 13, 13, 16, 3, 3, 1, 1, 0, 0, output3, weight2, bias1, output4);
     float output5[1936];
@@ -201,4 +201,8 @@ void CNNTest_PNet0(){
         printf("Output [%d]: %f\n", i, output9[i]);
         assert(equalFloatDefault(output9[i], expectedOutput1[i]));
     }
+}
+
+void CNNTest_RNet0(){
+
 }

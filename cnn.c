@@ -79,19 +79,29 @@ void CNN_ReLU(size_t inputLen, const float* input, float* output){
     }
 }
 
-void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, const float* input, float* output){
-    size_t outputHeight = floor((inputHeight-kernelHeight+2*paddingH)/strideH+1);
-    size_t outputWidth = floor((inputWidth-kernelWidth+2*paddingW)/strideW+1);
-//    if (ceilMode){ // padding must be done properly -> adding right and bottom padding properly
-//        size_t outputHeight = ceil((inputHeight-kernelHeight+2*paddingH)/strideH+1);
-//        size_t outputWidth = ceil((inputWidth-kernelWidth+2*paddingW)/strideW+1);
-//    }
+void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, int ceilMode, const float* input, float* output){
+    size_t outputHeight, outputWidth;
+    if (ceilMode){
+        outputHeight = ceilf((inputHeight-kernelHeight+2*paddingH)/(float)strideH+1);
+        outputWidth = ceilf((inputWidth-kernelWidth+2*paddingW)/(float)strideW+1);
+    }
+    else{
+        outputHeight = (inputHeight-kernelHeight+2*paddingH)/strideH+1;
+        outputWidth = (inputWidth-kernelWidth+2*paddingW)/strideW+1;
+    }
     assert(outputHeight>0);
     assert(outputWidth>0);
 
-    if (paddingH != 0 || paddingW != 0){
-        int newHeight = inputHeight+2*paddingH;
-        int newWidth = inputWidth+2*paddingW;
+    int paddingRight = 0;
+    int paddingBottom = 0;
+    if (ceilMode){
+        paddingRight = (outputWidth-1)*strideW + kernelWidth - inputWidth;
+        paddingBottom = (outputHeight-1)*strideH + kernelHeight - inputHeight;
+    }
+
+    if (paddingH != 0 || paddingW != 0 || paddingRight !=0 || paddingBottom != 0){
+        int newHeight = inputHeight+2*paddingH + paddingBottom;
+        int newWidth = inputWidth+2*paddingW + paddingRight;
         size_t newInputSize = newHeight*newWidth*sizeof(float);
         float *newInput = (float*) malloc(newInputSize);
         memset(newInput, 0, newInputSize);
@@ -126,7 +136,7 @@ void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputW
 }
 
 void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output){
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, stride, padding, padding, input, output);
+    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, stride, padding, padding, 0, input, output);
 }
 
 void CNN_MaxPoolForwardDefault(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output){
@@ -203,4 +213,8 @@ void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, 
             }
         }
     }
+}
+
+void CNN_Permute(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t outputHeight, size_t outputWidth, const float* input, float* output){
+
 }

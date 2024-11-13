@@ -514,7 +514,7 @@ void CNNTest_MaxPool_0(){
 
     float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     float output[9];
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, input, output);
+    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, 0, input, output);
     float expectedOutput[] = {2.0, 4.0, 6.0, 2.0, 4.0, 6.0, 2.0, 4.0, 6.0};
     for (size_t i=0;i<9;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -535,7 +535,7 @@ void CNNTest_MaxPool_1(){
 
     float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     float output[4];
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, input, output);
+    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, 0, input, output);
     float expectedOutput[] = {1.0, 3.0, 5.0, 6.0};
     for (size_t i=0;i<4;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -634,6 +634,51 @@ void CNNTest_Softmax2D2(){
         printf("Output [%d]: %f\n", i, output[i]);
         assert(equalFloatDefault(output[i], expectedOutput[i]));
     }
+}
+
+void CNNTest_MaxPool_2(){
+    size_t inputChannels = 1;
+    size_t inputHeight = 3;
+    size_t inputWidth = 3;
+    size_t kernelHeight = 2;
+    size_t kernelWidth = 2;
+    int strideH = 2;
+    int strideW = 2;
+    int paddingH = 0;
+    int paddingW = 0;
+    int ceilMode = 1;
+
+    float input[] = {1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0};
+    float output[4];
+    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, ceilMode, input, output);
+    float expectedOutput[] = {2.0, 3.0, 2.0, 3.0};
+    for (size_t i=0;i<4;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloatDefault(output[i], expectedOutput[i]));
+    }
+}
+
+void CNNTest_MaxPool_3(){
+    size_t inputChannels = 1;
+    size_t inputHeight = 3;
+    size_t inputWidth = 3;
+    size_t kernelHeight = 3;
+    size_t kernelWidth = 3;
+    int strideH = 3;
+    int strideW = 3;
+    int paddingH = 1;
+    int paddingW = 1;
+    int ceilMode = 1;
+
+    float input[] = {1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0};
+    float output[4];
+    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, ceilMode, input, output);
+    float expectedOutput[] = {2.0, 3.0, 2.0, 3.0};
+    for (size_t i=0;i<4;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloatDefault(output[i], expectedOutput[i]));
+    }
+
 }
 
 #pragma clang diagnostic pop

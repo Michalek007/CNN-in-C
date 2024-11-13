@@ -17,7 +17,7 @@ void CNN_ConvLayerForwardDefault(size_t inputChannels, size_t inputHeight, size_
 
 void CNN_ReLU(size_t inputLen, const float* input, float* output);
 
-void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, const float* input, float* output);
+void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, int ceilMode, const float* input, float* output);
 
 void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output);
 
@@ -28,5 +28,7 @@ void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, cons
 void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t dim, const float* input, float* output);
 
 void CNN_Softmax(size_t inputLen, const float* input, float* output);
+
+void CNN_Permute(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t outputHeight, size_t outputWidth, const float* input, float* output);
 
 #endif //CNN_CNN_H

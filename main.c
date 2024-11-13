@@ -34,6 +34,8 @@ int main() {
     CNNTest_MaxPool1();
     CNNTest_MaxPool_0();
     CNNTest_MaxPool_1();
+    CNNTest_MaxPool_2();
+    CNNTest_MaxPool_3();
     CNNTest_PReLU0();
     CNNTest_PReLU1();
     CNNTest_Softmax0();
@@ -46,5 +48,6 @@ int main() {
     CNNTest_FashionMnist2();
     CNNTest_FashionMnist3();
     CNNTest_PNet0();
+    CNNTest_RNet0();
     return 0;
 }
