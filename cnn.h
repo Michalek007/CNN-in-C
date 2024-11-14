@@ -25,9 +25,9 @@ void CNN_MaxPoolForwardDefault(size_t inputChannels, size_t inputHeight, size_t 
 
 void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float* weights);
 
-void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t dim, const float* input, float* output);
+void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t dim, float* input);
 
-void CNN_Softmax(size_t inputLen, const float* input, float* output);
+void CNN_Softmax(size_t inputLen, float* input);
 
 void CNN_Permute(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t outputHeight, size_t outputWidth, const float* input, float* output);
 

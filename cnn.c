@@ -164,18 +164,18 @@ void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, floa
     }
 }
 
-void CNN_Softmax(size_t inputLen, const float* input, float* output){
+void CNN_Softmax(size_t inputLen, float* input){
     float sum = 0;
     for (size_t i=0;i<inputLen;++i){
-        output[i] = expf(input[i]);
-        sum += output[i];
+        input[i] = expf(input[i]);
+        sum += input[i];
     }
     for (size_t i=0;i<inputLen;++i){
-        output[i] = output[i] / sum;
+        input[i] = input[i] / sum;
     }
 }
 
-void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t dim, const float* input, float* output){
+void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t dim, float* input){
     size_t firstLoop = inputChannels;
     size_t secondLoop = inputHeight;
     size_t thirdLoop = inputWidth;
@@ -209,11 +209,11 @@ void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, 
                     }
 
                     if (step == 0){
-                        output[index] = expf(input[index]);
-                        sum += output[index];
+                        input[index] = expf(input[index]);
+                        sum += input[index];
                     }
                     else if (step == 1){
-                        output[index] = output[index] / sum;
+                        input[index] = input[index] / sum;
                     }
                 }
                 ++step;
