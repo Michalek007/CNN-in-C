@@ -192,12 +192,11 @@ void CNNTest_Conv3(){
 
 void CNNTest_ReLU(){
     float input [] = {-0.4731,  0.4078, 0.3754,  0.4056, -0.4612,  0.0842, 0.3044,  0.4700};
-    float output [8];
-    CNN_ReLU(8, input, output);
+    CNN_ReLU(8, input);
     float expectedOutput[] = {0,  0.4078, 0.3754,  0.4056, 0,  0.0842, 0.3044,  0.4700};
     for (size_t i=0;i<8;++i){
-        printf("Output: %f\n", output[i]);
-        assert(equalFloatDefault(output[i], expectedOutput[i]));
+        printf("Output: %f\n", input[i]);
+        assert(equalFloatDefault(input[i], expectedOutput[i]));
     }
 }
 

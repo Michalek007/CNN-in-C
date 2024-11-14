@@ -22,22 +22,19 @@ void CNNTest_FashionMnist(){
     float bias3[] = {0.40198129415512085, 0.012443888932466507, 0.38558700680732727, 0.10954641550779343, -0.32368960976600647, -0.5279492139816284, 0.25144922733306885, -0.18583503365516663, 0.07173604518175125, -0.46250301599502563};
     float output1[2304];
     CNN_ConvLayerForwardDefault(1, 28, 28, 4, 5, input, weight0, bias0, output1);
-    float output2[2304];
-    CNN_ReLU(2304, output1, output2);
+    CNN_ReLU(2304, output1);
     float output3[576];
-    CNN_MaxPoolForwardDefault(4, 24, 24, 2, output2, output3);
+    CNN_MaxPoolForwardDefault(4, 24, 24, 2, output1, output3);
     float output4[256];
     CNN_ConvLayerForwardDefault(4, 12, 12, 4, 5, output3, weight1, bias1, output4);
-    float output5[256];
-    CNN_ReLU(256, output4, output5);
+    CNN_ReLU(256, output4);
     float output6[64];
-    CNN_MaxPoolForwardDefault(4, 8, 8, 2, output5, output6);
+    CNN_MaxPoolForwardDefault(4, 8, 8, 2, output4, output6);
     float output7[64];
     CNN_FcLayerForward(64, 64, output6, weight2, bias2, output7);
-    float output8[64];
-    CNN_ReLU(64, output7, output8);
+    CNN_ReLU(64, output7);
     float output9[10];
-    CNN_FcLayerForward(64, 10, output8, weight3, bias3, output9);
+    CNN_FcLayerForward(64, 10, output7, weight3, bias3, output9);
 
     float expectedOutput[] = {19.045082092285156, -25.293790817260742, -1.3293073177337646, -19.79132080078125, -22.605213165283203, 39.16446304321289, 11.051363945007324, -3.5056564807891846, 16.36802864074707, -4.057287693023682};
 
@@ -60,22 +57,19 @@ void CNNTest_FashionMnist1(){
     float bias3[] = {0.40198129415512085, 0.012443888932466507, 0.38558700680732727, 0.10954641550779343, -0.32368960976600647, -0.5279492139816284, 0.25144922733306885, -0.18583503365516663, 0.07173604518175125, -0.46250301599502563};
     float output1[2304];
     CNN_ConvLayerForwardDefault(1, 28, 28, 4, 5, input, weight0, bias0, output1);
-    float output2[2304];
-    CNN_ReLU(2304, output1, output2);
+    CNN_ReLU(2304, output1);
     float output3[576];
-    CNN_MaxPoolForwardDefault(4, 24, 24, 2, output2, output3);
+    CNN_MaxPoolForwardDefault(4, 24, 24, 2, output1, output3);
     float output4[256];
     CNN_ConvLayerForwardDefault(4, 12, 12, 4, 5, output3, weight1, bias1, output4);
-    float output5[256];
-    CNN_ReLU(256, output4, output5);
+    CNN_ReLU(256, output4);
     float output6[64];
-    CNN_MaxPoolForwardDefault(4, 8, 8, 2, output5, output6);
+    CNN_MaxPoolForwardDefault(4, 8, 8, 2, output4, output6);
     float output7[64];
     CNN_FcLayerForward(64, 64, output6, weight2, bias2, output7);
-    float output8[64];
-    CNN_ReLU(64, output7, output8);
+    CNN_ReLU(64, output7);
     float output9[10];
-    CNN_FcLayerForward(64, 10, output8, weight3, bias3, output9);
+    CNN_FcLayerForward(64, 10, output7, weight3, bias3, output9);
 
     float expectedOutput[] = {7.977500915527344, -31.410804748535156, -11.723386764526367, -18.669832229614258, -25.166677474975586, 60.79644775390625, -7.741871356964111, 8.21593952178955, 12.187093734741211, 16.224061965942383};
 
@@ -96,22 +90,19 @@ void CNNTest_FashionMnist2(){
     float bias3[] = {0.07006636261940002, -0.08473037928342819, 0.24766896665096283, 0.2399648278951645, -0.6603628993034363, 0.17782869935035706, 0.5952440500259399, -0.06240854412317276, -0.12218615412712097, -0.3378467261791229};
     float output1[2304];
     CNN_ConvLayerForwardDefault(1, 28, 28, 4, 5, input, weight0, bias0, output1);
-    float output2[2304];
-    CNN_ReLU(2304, output1, output2);
+    CNN_ReLU(2304, output1);
     float output3[576];
-    CNN_MaxPoolForwardDefault(4, 24, 24, 2, output2, output3);
+    CNN_MaxPoolForwardDefault(4, 24, 24, 2, output1, output3);
     float output4[256];
     CNN_ConvLayerForwardDefault(4, 12, 12, 4, 5, output3, weight1, bias1, output4);
-    float output5[256];
-    CNN_ReLU(256, output4, output5);
+    CNN_ReLU(256, output4);
     float output6[64];
-    CNN_MaxPoolForwardDefault(4, 8, 8, 2, output5, output6);
+    CNN_MaxPoolForwardDefault(4, 8, 8, 2, output4, output6);
     float output7[64];
     CNN_FcLayerForward(64, 64, output6, weight2, bias2, output7);
-    float output8[64];
-    CNN_ReLU(64, output7, output8);
+    CNN_ReLU(64, output7);
     float output9[10];
-    CNN_FcLayerForward(64, 10, output8, weight3, bias3, output9);
+    CNN_FcLayerForward(64, 10, output7, weight3, bias3, output9);
 
     float expectedOutput[] = {8.803022384643555, -2.127699613571167, 9.705705642700195, -1.2135971784591675, 2.984992265701294, 1.3259118795394897, 6.741541862487793, -11.297676086425781, 3.5258612632751465, -13.549789428710938};
     for (size_t i=0;i<10;++i){
@@ -131,22 +122,19 @@ void CNNTest_FashionMnist3(){
     const float bias3[] = {0.07006636261940002, -0.08473037928342819, 0.24766896665096283, 0.2399648278951645, -0.6603628993034363, 0.17782869935035706, 0.5952440500259399, -0.06240854412317276, -0.12218615412712097, -0.3378467261791229};
     float output1[2304];
     CNN_ConvLayerForward_(1, 28, 28, 4, 5, 5, 1, 1, 0, 0, input, weight0, bias0, output1);
-    float output2[2304];
-    CNN_ReLU(2304, output1, output2);
+    CNN_ReLU(2304, output1);
     float output3[576];
-    CNN_MaxPoolForward_(4, 24, 24, 2, 2, 2, 2, 0, 0, 0, output2, output3);
+    CNN_MaxPoolForward_(4, 24, 24, 2, 2, 2, 2, 0, 0, 0, output1, output3);
     float output4[256];
     CNN_ConvLayerForward_(4, 12, 12, 4, 5, 5, 1, 1, 0, 0, output3, weight1, bias1, output4);
-    float output5[256];
-    CNN_ReLU(256, output4, output5);
+    CNN_ReLU(256, output4);
     float output6[64];
-    CNN_MaxPoolForward_(4, 8, 8, 2, 2, 2, 2, 0, 0, 0, output5, output6);
+    CNN_MaxPoolForward_(4, 8, 8, 2, 2, 2, 2, 0, 0, 0, output4, output6);
     float output7[64];
     CNN_FcLayerForward(64, 64, output6, weight2, bias2, output7);
-    float output8[64];
-    CNN_ReLU(64, output7, output8);
+    CNN_ReLU(64, output7);
     float output9[10];
-    CNN_FcLayerForward(64, 10, output8, weight3, bias3, output9);
+    CNN_FcLayerForward(64, 10, output7, weight3, bias3, output9);
 
     float expectedOutput[] = {5.969808578491211, -5.960600852966309, 11.140905380249023, -1.8638883829116821, 4.821516036987305, 12.71646785736084, 2.497504234313965, -7.999385833740234, 1.0882493257522583, -15.035531997680664};
     for (size_t i=0;i<10;++i){

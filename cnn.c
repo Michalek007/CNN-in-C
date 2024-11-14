@@ -72,13 +72,10 @@ void CNN_ConvLayerForwardDefault(size_t inputChannels, size_t inputHeight, size_
     CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernel, kernel, 1, 0, input, weights, biases, output);
 }
 
-void CNN_ReLU(size_t inputLen, const float* input, float* output){
+void CNN_ReLU(size_t inputLen, float* input){
     for (size_t i=0;i<inputLen;++i){
         if (input[i] < 0){
-            output[i] = 0;
-        }
-        else{
-            output[i] = input[i];
+            input[i] = 0;
         }
     }
 }

@@ -15,7 +15,7 @@ void CNN_ConvLayerForward(size_t inputChannels, size_t inputHeight, size_t input
 
 void CNN_ConvLayerForwardDefault(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernel, const float* input, const float* weights, const float* biases, float* output);
 
-void CNN_ReLU(size_t inputLen, const float* input, float* output);
+void CNN_ReLU(size_t inputLen, float* input);
 
 void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, int ceilMode, const float* input, float* output);
 
