@@ -548,14 +548,13 @@ void CNNTest_PReLU0(){
     size_t inputHeight = 2;
     size_t inputWidth = 6;
 
-    const float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     const float weights[] = {0.25, 0.25};
-    float output[24];
-    CNN_PReLU(inputChannels, inputHeight, inputWidth, input, weights, output);
+    CNN_PReLU(inputChannels, inputHeight, inputWidth, input, weights);
     float expectedOutput[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     for (size_t i=0;i<24;++i){
-        printf("Output [%d]: %f\n", i, output[i]);
-        assert(equalFloatDefault(output[i], expectedOutput[i]));
+        printf("Output [%d]: %f\n", i, input[i]);
+        assert(equalFloatDefault(input[i], expectedOutput[i]));
     }
 }
 
@@ -564,14 +563,13 @@ void CNNTest_PReLU1(){
     size_t inputHeight = 2;
     size_t inputWidth = 6;
 
-    const float input[] = {1.0, 2.0, 3.0, -4.0, -5.0, -6.0, -1.0, -2.0, -3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, -4.0, -5.0, -6.0};
+    float input[] = {1.0, 2.0, 3.0, -4.0, -5.0, -6.0, -1.0, -2.0, -3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, -4.0, -5.0, -6.0};
     const float weights[] = {0.25, 0.25};
-    float output[24];
-    CNN_PReLU(inputChannels, inputHeight, inputWidth, input, weights, output);
+    CNN_PReLU(inputChannels, inputHeight, inputWidth, input, weights);
     float expectedOutput[] = {1.0, 2.0, 3.0, -1.0, -1.25, -1.5, -0.25, -0.5, -0.75, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, -1.0, -1.25, -1.5};
     for (size_t i=0;i<24;++i){
-        printf("Output [%d]: %f\n", i, output[i]);
-        assert(equalFloatDefault(output[i], expectedOutput[i]));
+        printf("Output [%d]: %f\n", i, input[i]);
+        assert(equalFloatDefault(input[i], expectedOutput[i]));
     }
 }
 
@@ -581,6 +579,7 @@ void CNNTest_Softmax0(){
     const float input[] = {1.0, 2.0, 3.0, -4.0, -5.0, -6.0, -1.0, -2.0, -3.0, 4.0, 5.0, 6.0};
     float output[12];
     CNN_Softmax(inputLen, input, output);
+//    CNN_Softmax2D(inputLen, 1, 1, 0, input, output);
     float expectedOutput[] = {0.004265888594090939, 0.011595887131989002, 0.03152088820934296, 2.874333040381316e-05, 1.0574080079095438e-05, 3.889986601279816e-06, 0.0005773252341896296, 0.0002123860758729279, 7.813247066223994e-05, 0.08568266034126282, 0.23290961980819702, 0.6331139802932739};
     for (size_t i=0;i<12;++i){
         printf("Output [%d]: %f\n", i, output[i]);

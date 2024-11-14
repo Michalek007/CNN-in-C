@@ -153,7 +153,7 @@ void CNN_MaxPoolForwardDefault(size_t inputChannels, size_t inputHeight, size_t 
     CNN_MaxPoolForward(inputChannels, inputHeight, inputWidth, kernel, kernel, (int)kernel, 0, input, output);
 }
 
-void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, const float* weights, float* output){
+void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float* weights){
     for (size_t o=0;o<inputChannels;++o){
         for (size_t i=0;i<inputHeight;++i){
             for (size_t j=0;j<inputWidth;++j){
@@ -161,7 +161,7 @@ void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, cons
                 float a = 1;
                 if (input[index] < 0)
                     a = weights[o];
-                output[index] = a * input[index];
+                input[index] = a * input[index];
             }
         }
     }
