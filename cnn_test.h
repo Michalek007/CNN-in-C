@@ -51,5 +51,11 @@ void CNNTest_Softmax2D2();
 void CNNTest_Permute0();
 void CNNTest_Permute1();
 void CNNTest_Permute2();
+void CNNTest_BoxIou0();
+void CNNTest_BoxIou1();
+void CNNTest_BoxNms0();
+void CNNTest_BoxNms1();
+void CNNTest_AdaptiveAveragePool0();
+void CNNTest_AdaptiveAveragePool1();
 
 #endif //CNN_CNN_TEST_H

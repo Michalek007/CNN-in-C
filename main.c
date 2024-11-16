@@ -2,12 +2,23 @@
 #include "cnn.h"
 #include "cnn_test.h"
 #include "cnn_test_networks.h"
+#include "mtcnn_test.h"
 
 
 int main() {
     printf("Hello, World!\n");
 
-    CNNTest_Dev();
+
+//    MTCNNTest_GenerateBoundingBox0();
+//    MTCNNTest_GenerateBoundingBox1();
+//    MTCNNTest_GenerateBoundingBox2();
+//    MTCNNTest_DetectFace0();
+//    MTCNNTest_DetectFace1();
+//    MTCNNTest_DetectFace2();
+//    return 0;
+//
+//    CNNTest_Dev();
+//    return 0;
 
     CNNTest_FcLayer0();
     CNNTest_FcLayer1();
@@ -48,6 +59,13 @@ int main() {
     CNNTest_Permute0();
     CNNTest_Permute1();
 //    CNNTest_Permute2();
+    CNNTest_BoxIou0();
+    CNNTest_BoxIou1();
+    CNNTest_BoxNms0();
+    CNNTest_BoxNms1();
+    CNNTest_AdaptiveAveragePool0();
+    CNNTest_AdaptiveAveragePool1();
+
 
     CNNTest_FashionMnist();
     CNNTest_FashionMnist1();

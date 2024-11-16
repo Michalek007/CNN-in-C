@@ -100,27 +100,18 @@ void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputW
         paddingBottom = (outputHeight-1)*strideH + kernelHeight - inputHeight;
     }
 
+    int hasPadding = 0;
     if (paddingH != 0 || paddingW != 0 || paddingRight !=0 || paddingBottom != 0){
         int newHeight = inputHeight+2*paddingH + paddingBottom;
         int newWidth = inputWidth+2*paddingW + paddingRight;
-        size_t newInputSize = inputChannels*newHeight*newWidth*sizeof(float);
-        float *newInput = (float*) malloc(newInputSize);
-        assert(newInput != NULL);
-        memset(newInput, 0, newInputSize);
-
-        for (size_t i=0;i<inputChannels*newHeight*newWidth;i++){
-            newInput[i] = -FLT_MAX;
-        }
-
-        for (size_t o=0;o<inputChannels;++o){
-            for (size_t i=0;i<inputHeight;i++){
-                memcpy(newInput+o*newWidth*newHeight+(newWidth*paddingH)+paddingW+i*newWidth, input+o*inputWidth*inputHeight+i*inputWidth, inputWidth*sizeof(float));
-            }
-        }
-        input = newInput;
+        hasPadding = 1;
         inputHeight = newHeight;
         inputWidth = newWidth;
     }
+    int paddingTop = paddingH;
+    int paddingLeft = paddingW;
+    paddingRight += paddingW;
+    paddingBottom += paddingH;
 
     for (size_t o=0;o<inputChannels;++o){
         for (size_t i=0;i<outputHeight;i++){
@@ -129,7 +120,26 @@ void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputW
                 for (size_t k=0;k<kernelHeight;k++){
                     for (size_t l=0;l<kernelWidth;l++){
                         int inputIndex = o*inputHeight*inputWidth + (i*strideH+k)*inputWidth + j*strideW + l;
-                        float targetValue = input[inputIndex];
+                        float targetValue;
+                        if (hasPadding){
+                            inputIndex -= o*inputHeight*inputWidth;
+                            size_t row = inputIndex / inputWidth;
+                            size_t column = inputIndex % inputWidth;
+                            if (row < paddingTop || row >= inputHeight - paddingBottom){
+                                targetValue = -FLT_MAX;
+                            }
+                            else if (column < paddingLeft || column >= inputWidth - paddingRight){
+                                targetValue = -FLT_MAX;
+                            }
+                            else{
+                                inputIndex = inputIndex - inputWidth*row - paddingLeft + (inputWidth-paddingLeft-paddingRight)*(row-paddingTop); // last=> oldInputWidth*oldInputRow
+                                inputIndex += o*(inputHeight-paddingTop-paddingBottom)*(inputWidth-paddingLeft-paddingRight); // o * oldInputHeight * oldInputWidth
+                                targetValue = input[inputIndex];
+                            }
+                        }
+                        else{
+                            targetValue = input[inputIndex];
+                        }
                         if (maxValue < targetValue || (k == 0 && l == 0)){
                             maxValue = targetValue;
                         }
@@ -176,20 +186,23 @@ void CNN_Softmax(size_t inputLen, float* input){
 }
 
 void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t dim, float* input){
-    size_t firstLoop = inputChannels;
-    size_t secondLoop = inputHeight;
-    size_t thirdLoop = inputWidth;
-    if (dim == 0){
-        firstLoop = inputHeight;
-        secondLoop = inputWidth;
-        thirdLoop = inputChannels;
+    size_t firstLoop, secondLoop, thirdLoop;
+    switch (dim){
+        case 0:
+            firstLoop = inputHeight;
+            secondLoop = inputWidth;
+            thirdLoop = inputChannels;
+            break;
+        case 1:
+            firstLoop = inputHeight;
+            secondLoop = inputWidth;
+            thirdLoop = inputChannels;
+            break;
+        default:
+            firstLoop = inputChannels;
+            secondLoop = inputHeight;
+            thirdLoop = inputWidth;
     }
-    else if (dim == 1){
-        firstLoop = inputChannels;
-        secondLoop = inputWidth;
-        thirdLoop = inputHeight;
-    }
-
 
     for (size_t o=0;o<firstLoop;++o){
         for (size_t i=0;i<secondLoop;++i){
@@ -198,14 +211,15 @@ void CNN_Softmax2D(size_t inputChannels, size_t inputHeight, size_t inputWidth, 
             while (step<2){
                 for (size_t j=0;j<thirdLoop;++j){
                     size_t index;
-                    if (dim == 0){
-                        index =  j*inputHeight*inputWidth + o*inputWidth + i;
-                    }
-                    else if (dim == 1){
-                        index =  o*inputHeight*inputWidth + j*inputWidth + i;
-                    }
-                    else{
-                        index =  o*inputHeight*inputWidth + i*inputWidth + j;
+                    switch (dim){
+                        case 0:
+                            index =  j*inputHeight*inputWidth + o*inputWidth + i;
+                            break;
+                        case 1:
+                            index =  o*inputHeight*inputWidth + j*inputWidth + i;
+                            break;
+                        default:
+                            index =  o*inputHeight*inputWidth + i*inputWidth + j;
                     }
 
                     if (step == 0){
@@ -288,6 +302,100 @@ void CNN_Permute(size_t inputChannels, size_t inputHeight, size_t inputWidth, si
                 size_t outputIndex = o*outputHeight*outputWidth + i*outputWidth + j;
                 size_t inputIndex = factor_o*inputHeight*inputWidth + factor_i*inputWidth + factor_j;
                 output[outputIndex] = input[inputIndex];
+            }
+        }
+    }
+}
+
+/*
+ * Boxes are expected to be in format: x, y, x2, y2 where: x2 > x, y2 > y
+ */
+void CNN_BoxIou(size_t boxesLen, const float* boxes, size_t boxesLen2, const float* boxes2, float* output){
+    for (size_t i=0;i<boxesLen*4;i+=4){
+        float area = (boxes[i+2] - boxes[i]) * (boxes[i+3] - boxes[i+1]);
+        for (size_t j=0;j<boxesLen2*4;j+=4){
+            float x = fmaxf(0, fminf(boxes[i+2], boxes2[j+2]) - fmaxf(boxes[i], boxes2[j]));
+            float y = fmaxf(0, fminf(boxes[i+3], boxes2[j+3]) - fmaxf(boxes[i+1], boxes2[j+1]));
+            float overlapArea = x * y;
+            float area2 = (boxes2[j+2] - boxes2[j]) * (boxes2[j+3] - boxes2[j+1]);
+            size_t index = i/4*boxesLen2+j/4;
+            output[index] = overlapArea / (area + area2 - overlapArea);
+//            output[index] = CNN_Iou(boxes[i], boxes[i+1], boxes[i+2], boxes[i+3], boxes2[j], boxes2[j+1], boxes2[j+2], boxes2[j+3]);
+        }
+    }
+}
+
+float CNN_Iou(float x, float y, float x2, float y2, float xp, float yp, float x2p, float y2p){
+    float area = (x2 - x) * (y2 - y);
+    float area2 = (x2p - xp) * (y2p - yp);
+    float x_distance = fmaxf(0, fminf(x2, x2p) - fmaxf(x, xp));
+    float y_distance = fmaxf(0, fminf(y2, y2p) - fmaxf(y, yp));
+    float overlapArea = x_distance * y_distance;
+    return overlapArea / (area + area2 - overlapArea);
+}
+
+void CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, float* output){
+
+    int* indexes = calloc(4*boxesLen, 4*boxesLen*sizeof(int));
+    for (size_t i=0;i<boxesLen;++i){
+        indexes[i] = -1;
+    }
+    for (size_t i=0;i<boxesLen*4;i+=4){
+        if (indexes[i/4] == -2)
+            continue;
+        for (size_t j=i+4;j<boxesLen*4;j+=4){
+            if (indexes[j/4] == -2)
+                continue;
+
+            float iou = CNN_Iou(boxes[i], boxes[i+1], boxes[i+2], boxes[i+3], boxes[j], boxes[j+1], boxes[j+2], boxes[j+3]);
+            int boxI = i;
+            int boxJ = j;
+
+            if (iou > iouThreshold){
+                if (scores[i/4] >= scores[j/4]){
+                    boxJ = -2;
+                }
+                else{
+                    boxI = -2;
+                }
+            }
+            indexes[i/4] = boxI;
+            indexes[j/4] = boxJ;
+            if (boxI == -2)
+                break;
+        }
+    }
+    size_t outputIndex = 0;
+    for (size_t i=0;i<boxesLen;++i){
+        int inputIndex = indexes[i];
+        if (inputIndex < 0)
+            continue;
+        output[outputIndex] = boxes[inputIndex];
+        output[outputIndex+1] = boxes[inputIndex+1];
+        output[outputIndex+2] = boxes[inputIndex+2];
+        output[outputIndex+3] = boxes[inputIndex+3];
+        outputIndex += 4;
+    }
+    free(indexes);
+}
+
+void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const float* input, float* output){
+    size_t kernelHeight = (inputHeight+outputHeight-1) / outputHeight;
+    size_t kernelWidth = (inputWidth+outputWidth-1) / outputWidth;
+    size_t strideH = inputHeight/outputHeight;
+    size_t strideW = inputWidth/outputWidth;;
+    for (size_t o=0;o<inputChannels;++o){
+        for (size_t i=0;i<outputHeight;i++){
+            for (size_t j=0;j<outputWidth;j++){
+                float sum = 0;
+                for (size_t k=0;k<kernelHeight;k++){
+                    for (size_t l=0;l<kernelWidth;l++){
+                        int inputIndex = o*inputHeight*inputWidth + (i*strideH+k)*inputWidth + j*strideW + l;
+                        sum += input[inputIndex];
+                    }
+                }
+                int outputIndex = o*outputHeight*outputWidth+i*outputWidth + j;
+                output[outputIndex] = sum / (kernelHeight * kernelWidth);
             }
         }
     }
