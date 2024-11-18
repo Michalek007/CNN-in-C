@@ -125,10 +125,7 @@ void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputW
                             inputIndex -= o*inputHeight*inputWidth;
                             size_t row = inputIndex / inputWidth;
                             size_t column = inputIndex % inputWidth;
-                            if (row < paddingTop || row >= inputHeight - paddingBottom){
-                                targetValue = -FLT_MAX;
-                            }
-                            else if (column < paddingLeft || column >= inputWidth - paddingRight){
+                            if (row < paddingTop || row >= inputHeight - paddingBottom || column < paddingLeft || column >= inputWidth - paddingRight){
                                 targetValue = -FLT_MAX;
                             }
                             else{
@@ -380,17 +377,20 @@ void CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float 
 }
 
 void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const float* input, float* output){
-    size_t kernelHeight = (inputHeight+outputHeight-1) / outputHeight;
-    size_t kernelWidth = (inputWidth+outputWidth-1) / outputWidth;
-    size_t strideH = inputHeight/outputHeight;
-    size_t strideW = inputWidth/outputWidth;;
+    size_t kernelHeight = ceilf((inputHeight+outputHeight-1) / outputHeight);
+    size_t kernelWidth = ceilf((inputWidth+outputWidth-1) / outputWidth);
+    float stepH = (inputHeight - kernelHeight) / ((float)outputHeight-1);
+    float stepW = (inputWidth - kernelWidth) / ((float)outputWidth-1);
+
     for (size_t o=0;o<inputChannels;++o){
         for (size_t i=0;i<outputHeight;i++){
             for (size_t j=0;j<outputWidth;j++){
                 float sum = 0;
                 for (size_t k=0;k<kernelHeight;k++){
                     for (size_t l=0;l<kernelWidth;l++){
-                        int inputIndex = o*inputHeight*inputWidth + (i*strideH+k)*inputWidth + j*strideW + l;
+                        int factorI = roundf(i*stepH);
+                        int factorJ = roundf(j*stepW);
+                        int inputIndex = o*inputHeight*inputWidth + (factorI+k)*inputWidth + factorJ + l;
                         sum += input[inputIndex];
                     }
                 }
