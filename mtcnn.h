@@ -11,4 +11,6 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
 
 void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float* reg, const float* score, float scale, float threshold, float* output);
 
+int MTCNN_BoxNms(size_t boxesLen, const float* boxes, float iouThreshold, float* output);
+
 #endif //CNN_MTCNN_H

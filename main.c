@@ -16,6 +16,11 @@ int main() {
 //    MTCNNTest_GenerateBoundingBox0();
 //    MTCNNTest_GenerateBoundingBox1();
 //    MTCNNTest_GenerateBoundingBox2();
+//    MTCNNTest_BoxNms0();
+//    MTCNNTest_BoxNms1();
+//    MTCNNTest_BoxNms2();
+//    MTCNNTest_BoxNms3();
+//    MTCNNTest_BoxNms4();
 //    MTCNNTest_DetectFace0();
     MTCNNTest_DetectFace1();
     MTCNNTest_DetectFace2();
