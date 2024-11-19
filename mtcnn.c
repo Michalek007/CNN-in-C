@@ -69,9 +69,47 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
         for (size_t j=0;j<inputChannels*outputHeight*outputWidth;++j){
             scaledOutput[j] = (scaledOutput[j] - 127.5f) * 0.0078125f;
         }
-        float* outputReg;
-        float* outputProb;
+        size_t outputRegSize = PNet_GetOutputRegSize(outputHeight, outputWidth);
+        size_t outputProbSize = PNet_GetOutputProbSize(outputHeight, outputWidth);
+        float outputReg[outputRegSize];
+        float outputProb[outputProbSize];
         PNet_Model(inputChannels, outputHeight, outputWidth, scaledOutput, outputReg, outputProb);
+        size_t regOutputHeight = PNet_GetOutputRegHeight(outputHeight);
+        size_t regOutputWidth = PNet_GetOutputRegWidth(outputWidth);
+
+        float outputBox[9*regOutputHeight*regOutputWidth];
+        MTCNN_GenerateBoundingBox(regOutputHeight, regOutputWidth, outputReg, outputProb, scales[i], thresholdPNet, outputBox);
+
+        if (i == 0){
+            for (size_t j=0;j<18;++j){
+                printf("Output [%d]: %f\n", j, outputBox[j]);
+                assert(equalFloatDefault(outputBox[j], expectedOutput01[j]));
+            }
+        }
+        else if (i == 1){
+            for (size_t j=0;j<18;++j){
+                printf("Output [%d]: %f\n", j, outputBox[j]);
+                assert(equalFloatDefault(outputBox[j], expectedOutput11[j]));
+            }
+        }
+        else if (i == 2){
+            for (size_t j=0;j<36;++j){
+                printf("Output [%d]: %f\n", j, outputBox[j]);
+                assert(equalFloatDefault(outputBox[j], expectedOutput21[j]));
+            }
+        }
+        else if (i == 3){
+            for (size_t j=0;j<36;++j){
+                printf("Output [%d]: %f\n", j, outputBox[j]);
+                assert(equalFloatDefault(outputBox[j], expectedOutput31[j]));
+            }
+        }
+        else if (i == 4){
+            for (size_t j=0;j<9;++j){
+                printf("Output [%d]: %f\n", j, outputBox[j]);
+                assert(equalFloatDefault(outputBox[j], expectedOutput41[j]));
+            }
+        }
 //        free(scaledOutput);
     }
 }
@@ -85,7 +123,7 @@ void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const floa
     size_t idx = 0;
     for (size_t i=0;i<inputHeight;++i){
         for (size_t j=0;j<inputWidth;++j){
-            size_t index = i*inputWidth + j;
+            size_t index = inputWidth*inputHeight + i*inputWidth + j; // equivalent to: score[1][i][j]
             if (score[index] > threshold){
                 if (idx >= indexesSize){
                     indexesSize += 10;
@@ -94,7 +132,7 @@ void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const floa
                     free(indexes);
                     indexes = newIndexes;
                 }
-                indexes[idx] = index;
+                indexes[idx] = index - inputWidth*inputHeight;
                 ++idx;
             }
         }
@@ -125,7 +163,7 @@ void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const floa
         output[9*i+1] = q1[i*2+1];
         output[9*i+2] = q2[i*2];
         output[9*i+3] = q2[i*2+1];
-        output[9*i+4] = score[indexes[i]];
+        output[9*i+4] = score[indexes[i] + inputHeight*inputWidth]; // equivalent to: score[1][index]
         output[9*i+5] = newReg[4*i];
         output[9*i+6] = newReg[4*i+1];
         output[9*i+7] = newReg[4*i+2];

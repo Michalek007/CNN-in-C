@@ -9,6 +9,8 @@
 
 void PNet_Model(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, float* outputReg, float* outputProb);
 
+size_t PNet_GetOutputRegHeight(size_t inputHeight);
+size_t PNet_GetOutputRegWidth(size_t inputWidth);
 size_t PNet_GetOutputRegSize(size_t inputHeight, size_t inputWidth);
 
 size_t PNet_GetOutputProbSize(size_t inputHeight, size_t inputWidth);

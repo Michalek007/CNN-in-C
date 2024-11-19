@@ -9,8 +9,8 @@
 int main() {
     printf("Hello, World!\n");
 
-    PnetTest_Model0();
-    return 0;
+//    PnetTest_Model0();
+//    return 0;
 
 
 //    MTCNNTest_GenerateBoundingBox0();

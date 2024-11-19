@@ -61,3 +61,13 @@ size_t PNet_GetOutputProbSize(size_t inputHeight, size_t inputWidth){
     size_t outputChannels = 2;
     return outputChannels * outputHeight * outputWidth;
 }
+
+size_t PNet_GetOutputRegHeight(size_t inputHeight){
+    size_t outputHeight = ceilf((inputHeight - 2) / 2.0f) - 4;
+    return outputHeight;
+}
+
+size_t PNet_GetOutputRegWidth(size_t inputWidth){
+    size_t outputWidth = ceilf((inputWidth - 2) / 2.0f) - 4;
+    return outputWidth;
+}
