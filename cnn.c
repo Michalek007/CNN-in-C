@@ -377,20 +377,20 @@ void CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float 
 }
 
 void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const float* input, float* output){
-    size_t kernelHeight = ceilf((inputHeight+outputHeight-1) / outputHeight);
-    size_t kernelWidth = ceilf((inputWidth+outputWidth-1) / outputWidth);
-    float stepH = (inputHeight - kernelHeight) / ((float)outputHeight-1);
-    float stepW = (inputWidth - kernelWidth) / ((float)outputWidth-1);
 
     for (size_t o=0;o<inputChannels;++o){
         for (size_t i=0;i<outputHeight;i++){
             for (size_t j=0;j<outputWidth;j++){
                 float sum = 0;
+                int startIndexH = i * inputHeight/outputHeight;
+                int startIndexW = j * inputWidth/outputWidth;
+                int endIndexH = ceilf((i+1) * inputHeight/(float)outputHeight);
+                int endIndexW = ceilf((j+1) * inputWidth/(float)outputWidth);
+                size_t kernelHeight = endIndexH - startIndexH;
+                size_t kernelWidth = endIndexW - startIndexW;
                 for (size_t k=0;k<kernelHeight;k++){
                     for (size_t l=0;l<kernelWidth;l++){
-                        int factorI = roundf(i*stepH);
-                        int factorJ = roundf(j*stepW);
-                        int inputIndex = o*inputHeight*inputWidth + (factorI+k)*inputWidth + factorJ + l;
+                        int inputIndex = o*inputHeight*inputWidth + (startIndexH+k)*inputWidth + startIndexW + l;
                         sum += input[inputIndex];
                     }
                 }
