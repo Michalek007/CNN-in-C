@@ -35,7 +35,8 @@ void MTCNNTest_DetectFace0(){
 }
 
 void MTCNNTest_DetectFace1(){
-
+    float output[4*10];
+    MTCNN_DetectFace(3, 100, 100, detectFaceInput0, output);
 }
 
 void MTCNNTest_DetectFace2(){

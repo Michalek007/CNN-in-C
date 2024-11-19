@@ -5,7 +5,13 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 #include "mtcnn.h"
+#include "cnn.h"
+#include "dev_data.h"
+#include "cnn_test.h"
+#include "pnet.h"
 
 void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, float* output){
     float thresholdPNet = 0.9;
@@ -26,7 +32,47 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
     }
 
     for (size_t i=0;i<scalesSize;++i){
-
+        size_t outputHeight = inputHeight*scales[i]+1;
+        size_t outputWidth = inputWidth*scales[i]+1;
+        float* scaledOutput = malloc(inputChannels*outputHeight*outputWidth*sizeof(float));
+        CNN_AdaptiveAveragePool(inputChannels, inputHeight, inputWidth, outputHeight, outputWidth, input, scaledOutput);
+//        if (i == 0){
+//            for (size_t j=0;j<11163;++j){
+//                printf("Output [%d]: %f\n", j, scaledOutput[j]);
+//                assert(equalFloatDefault(scaledOutput[j], expectedOutput0[j]));
+//            }
+//        }
+//        else if (i == 1){
+//            for (size_t j=0;j<5547;++j){
+//                printf("Output [%d]: %f\n", j, scaledOutput[j]);
+//                assert(equalFloatDefault(scaledOutput[j], expectedOutput1[j]));
+//            }
+//        }
+//        else if (i == 2){
+//            for (size_t j=0;j<2883;++j){
+//                printf("Output [%d]: %f\n", j, scaledOutput[j]);
+//                assert(equalFloatDefault(scaledOutput[j], expectedOutput2[j]));
+//            }
+//        }
+//        else if (i == 3){
+//            for (size_t j=0;j<1452;++j){
+//                printf("Output [%d]: %f\n", j, scaledOutput[j]);
+//                assert(equalFloatDefault(scaledOutput[j], expectedOutput3[j]));
+//            }
+//        }
+//        else if (i == 4){
+//            for (size_t j=0;j<768;++j){
+//                printf("Output [%d]: %f\n", j, scaledOutput[j]);
+//                assert(equalFloatDefault(scaledOutput[j], expectedOutput4[j]));
+//            }
+//        }
+        for (size_t j=0;j<inputChannels*outputHeight*outputWidth;++j){
+            scaledOutput[j] = (scaledOutput[j] - 127.5f) * 0.0078125f;
+        }
+        float* outputReg;
+        float* outputProb;
+        PNet_Model(inputChannels, outputHeight, outputWidth, scaledOutput, outputReg, outputProb);
+//        free(scaledOutput);
     }
 }
 
