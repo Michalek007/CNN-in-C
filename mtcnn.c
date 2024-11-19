@@ -154,6 +154,9 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
 //        printf("Output [%d]: %f\n", i, boxes[i]);
 //        assert(equalFloatDefault(boxes[i], expectedOutput[i]));
 //    }
+    MTCNN_Rerec(currentBoxesCount, boxes);
+    int padArray[currentBoxesCount*4];
+    MTCNN_Pad(inputHeight, inputWidth, currentBoxesCount, boxes, padArray);
 
     int x = 0;
 }
@@ -270,4 +273,27 @@ int MTCNN_BoxNms(size_t boxesLen, const float* boxes, float iouThreshold, float*
     }
     free(indexes);
     return outputBoxesLen;
+}
+
+void MTCNN_Rerec(size_t boxesLen, float* boxes){
+    for (size_t i=0;i<boxesLen*5;i+=5){
+        float w = boxes[i+2] - boxes[i];
+        float h = boxes[i+3] - boxes[i+1];
+        float l = fmaxf(h, w);
+        boxes[i] = boxes[i] + w*0.5 - l*0.5;
+        boxes[i+1] = boxes[i+1] + h*0.5 - l*0.5;
+        boxes[i+2] = boxes[i] + l;
+        boxes[i+3] = boxes[i+1] + l;
+    }
+}
+
+void MTCNN_Pad(size_t inputHeight, size_t inputWidth, size_t boxesLen, float* boxes, int* output){
+    size_t outputIndex = 0;
+    for (size_t i=0;i<boxesLen*5;i+=5){
+        output[outputIndex] = boxes[i] < 1 ? 1 : boxes[i];
+        output[outputIndex+1] = boxes[i+1] < 1 ? 1 : boxes[i+1];
+        output[outputIndex+2] = boxes[i+2] > inputWidth ? inputWidth : boxes[i+2];
+        output[outputIndex+3] = boxes[i+3] > inputHeight ? inputHeight : boxes[i+3];
+        outputIndex += 4;
+    }
 }

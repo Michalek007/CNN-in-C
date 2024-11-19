@@ -16,5 +16,7 @@ void MTCNNTest_BoxNms1();
 void MTCNNTest_BoxNms2();
 void MTCNNTest_BoxNms3();
 void MTCNNTest_BoxNms4();
+void MTCNNTest_Rerec0();
+void MTCNNTest_Pad0();
 
 #endif //CNN_MTCNN_TEST_H
