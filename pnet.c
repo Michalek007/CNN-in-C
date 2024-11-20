@@ -2,12 +2,11 @@
 // Created by Michał on 19.11.2024.
 //
 
+#include <stdlib.h>
+#include <math.h>
 #include "pnet.h"
 #include "pnet_weights.h"
 #include "cnn.h"
-#include <stdlib.h>
-#include <math.h>
-
 
 void PNet_Model(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, float* outputReg, float* outputProb){
 //    float output1[6760];

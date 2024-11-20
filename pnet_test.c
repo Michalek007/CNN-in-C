@@ -2,13 +2,13 @@
 // Created by Michał on 19.11.2024.
 //
 
-#include "pnet_test.h"
-#include "cnn_test.h"
-#include "pnet_test_data.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "pnet_test.h"
+#include "cnn_test.h"
+#include "pnet_test_data.h"
 #include "pnet.h"
 
 void PnetTest_Model0(){
@@ -17,7 +17,7 @@ void PnetTest_Model0(){
     size_t inputWidth = 61;
     size_t inputSize = inputChannels*inputHeight*inputWidth*sizeof(float);
     float* input = malloc(inputSize);
-    memcpy(input, modelInput0, inputSize);
+    memcpy(input, PNetInput0, inputSize);
 //    for (size_t i=0;i<inputChannels*inputHeight*inputWidth;++i){
 //        input[i] = modelInput0[i];
 //    }

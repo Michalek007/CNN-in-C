@@ -4,13 +4,15 @@
 #include "cnn_test_networks.h"
 #include "mtcnn_test.h"
 #include "pnet_test.h"
+#include "rnet_test.h"
 
 
 int main() {
     printf("Hello, World!\n");
 
-//    PnetTest_Model0();
-//    return 0;
+    RNetTest_Model0();
+    PnetTest_Model0();
+    return 0;
 
 
 //    MTCNNTest_GenerateBoundingBox0();
