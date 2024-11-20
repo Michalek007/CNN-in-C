@@ -14,7 +14,7 @@
 #include "pnet.h"
 #include "rnet.h"
 
-void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, float* output){
+int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, float* output){
     // input consist uint8_t only -> type must be change
     float thresholdPNet = 0.9;
     float thresholdRNet = 0.9;
@@ -134,7 +134,7 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
 //        free(scaledOutput);
     }
     if (currentBoxesCount == 0)
-        return;
+        return 0;
 
     currentBoxesCount = MTCNN_BoxNms(currentBoxesCount, boxes, iouThresholdPNet1, boxes);
 //    float expectedOutput[] = {51.0, 21.0, 70.0, 40.0, 0.9039, -0.03787, 0.01272, 0.00483, 0.22522, 54.0, 28.0, 73.0, 46.0, 0.95487, -0.05535, 0.12994, -0.09492, 0.26756, 44.0, 25.0, 70.0, 51.0, 0.92829, 0.11208, 0.01449, 0.05255, 0.14467, 43.0, 29.0, 79.0, 66.0, 0.97301, 0.02569, -0.03714, -0.10525, 0.06338, 23.0, 23.0, 74.0, 74.0, 0.99966, 0.03534, -0.03008, -0.0268, 0.10018, 19.0, 19.0, 92.0, 92.0, 0.99322, 0.09031, 0.02829, -0.19878, 0.00652};
@@ -303,6 +303,7 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
             output[i+j] = boxes[i+j];
         }
     }
+    return currentBoxesCount;
 }
 
 void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float* reg, const float* score, float scale, float threshold, float* output){

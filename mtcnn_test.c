@@ -31,7 +31,8 @@ void MTCNNTest_GenerateBoundingBox2(){
 void MTCNNTest_DetectFace0(){
     size_t maxBoxesCount = 5;
     float output[5*maxBoxesCount];
-    MTCNN_DetectFace(3, 100, 100, detectFaceInput0, output);
+    int faces = MTCNN_DetectFace(3, 100, 100, detectFaceInput0, output);
+    assert(faces == 1);
     float expectedOutput[] = {18.58723, 20.20803, 74.28621, 75.90701, 0.99956};
     for (size_t i=0;i<5;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -40,11 +41,39 @@ void MTCNNTest_DetectFace0(){
 }
 
 void MTCNNTest_DetectFace1(){
-
+    size_t maxBoxesCount = 5;
+    float output[5*maxBoxesCount];
+    int faces = MTCNN_DetectFace(3, 100, 100, detectFaceInput1, output);
+    assert(faces == 1);
+    float expectedOutput[] = {21.73954, 20.08783, 86.66113, 85.00943, 0.9992};
+    for (size_t i=0;i<5;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloat(output[i], expectedOutput[i], 0.01f));
+    }
 }
 
 void MTCNNTest_DetectFace2(){
+    size_t maxBoxesCount = 5;
+    float output[5*maxBoxesCount];
+    int faces = MTCNN_DetectFace(3, 50, 50, detectFaceInput2, output);
+    assert(faces == 1);
+    float expectedOutput[] = {26.4718, 9.5409, 50.2393, 33.30841, 0.99982};
+    for (size_t i=0;i<5;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloat(output[i], expectedOutput[i], 0.01f));
+    }
+}
 
+void MTCNNTest_DetectFace3(){
+    size_t maxBoxesCount = 5;
+    float output[5*maxBoxesCount];
+    int faces = MTCNN_DetectFace(3, 100, 100, detectFaceInput3, output);
+    assert(faces == 3);
+    float expectedOutput[] = {33.71898, 36.16474, 50.14524, 52.591, 0.99605, 7.04073, 15.27417, 38.05519, 46.28862, 0.99894, 62.07874, 27.25788, 91.55754, 56.73669, 0.99476};
+    for (size_t i=0;i<15;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloat(output[i], expectedOutput[i], 0.01f));
+    }
 }
 
 void MTCNNTest_BoxNms0(){

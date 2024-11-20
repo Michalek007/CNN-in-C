@@ -28,6 +28,7 @@ int main() {
     MTCNNTest_DetectFace0();
     MTCNNTest_DetectFace1();
     MTCNNTest_DetectFace2();
+    MTCNNTest_DetectFace3();
     return 0;
 
 //    CNNTest_Dev();
