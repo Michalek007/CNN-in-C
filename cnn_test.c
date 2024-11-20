@@ -857,4 +857,26 @@ void CNNTest_AdaptiveAveragePool3(){
     }
 }
 
+void CNNTest_Permute3(){
+    float outputReg[] = {0.03958, -0.02145, -0.11738, -0.0546, 0.1054, -0.01394, -0.18461, -0.1425, -0.18486, -0.1617, -0.14764, 0.19548, -0.11502, -0.12154, 0.21121, 0.48961, -0.05304, -0.05735, 0.13819, 0.47433, -0.12459, -0.0593, 0.22122, 0.73505};
+    float output[24];
+    CNN_Permute(1, 6, 4, 0, 2, 1, outputReg, output);
+    float expectedOutput[] = {0.03958, 0.1054, -0.18486, -0.11502, -0.05304, -0.12459, -0.02145, -0.01394, -0.1617, -0.12154, -0.05735, -0.0593, -0.11738, -0.18461, -0.14764, 0.21121, 0.13819, 0.22122, -0.0546, -0.1425, 0.19548, 0.48961, 0.47433, 0.73505};
+    for (size_t i=0;i<24;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloatDefault(output[i], expectedOutput[i]));
+    }
+}
+
+void CNNTest_Permute4(){
+    float outputProb[] = {0.00044, 0.99956, 0.00296, 0.99704, 0.09634, 0.90366, 0.99613, 0.00387, 0.99804, 0.00196, 0.99771, 0.00229};
+    float output[12];
+    CNN_Permute(1, 6, 2, 0, 2, 1, outputProb, output);
+    float expectedOutput[] = {0.00044, 0.00296, 0.09634, 0.99613, 0.99804, 0.99771, 0.99956, 0.99704, 0.90366, 0.00387, 0.00196, 0.00229};
+    for (size_t i=0;i<12;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloatDefault(output[i], expectedOutput[i]));
+    }
+}
+
 #pragma clang diagnostic pop

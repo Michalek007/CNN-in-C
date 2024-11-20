@@ -233,7 +233,7 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
         RNet_Model(scaledInput, outputReg+4*currentRegCount, outputProb+2*currentRegCount);
         ++currentRegCount;
     }
-    float expectedOutput04[] = {-0.12459, -0.0593, 0.22122, 0.73505, -0.11502, -0.12154, 0.21121, 0.48961, -0.05304, -0.05735, 0.13819, 0.47433, -0.18486, -0.1617, -0.14764, 0.19548,  0.03958, -0.02145, -0.11738, -0.0546, 0.1054, -0.01394, -0.18461, -0.1425};
+//    float expectedOutput04[] = {-0.12459, -0.0593, 0.22122, 0.73505, -0.11502, -0.12154, 0.21121, 0.48961, -0.05304, -0.05735, 0.13819, 0.47433, -0.18486, -0.1617, -0.14764, 0.19548,  0.03958, -0.02145, -0.11738, -0.0546, 0.1054, -0.01394, -0.18461, -0.1425};
 //    for (size_t i=0;i<24;++i){
 //        printf("Output [%d]: %f\n", i, outputReg[i]);
 //        assert(equalFloatDefault(outputReg[i], expectedOutput04[i]));
@@ -243,10 +243,34 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
 //        printf("Output [%d]: %f\n", i, outputProb[i]);
 //        assert(equalFloatDefault(outputProb[i], expectedOutput14[i]));
 //    }
-    float newOutputReg[currentBoxesCount*4];
-    float newOutputProb[currentBoxesCount*2];
-    CNN_Permute(1, currentBoxesCount, 4, 0, 2, 1, outputReg, newOutputReg);
-    CNN_Permute(1, currentBoxesCount, 2, 0, 2, 1, outputProb, newOutputProb);
+
+    currentBoxesCount = 0;
+    for(size_t i=0;i<currentRegCount;++i){
+        size_t probIndex = 2*i+1;
+        if (outputProb[probIndex] > thresholdRNet){
+            boxes[5*currentBoxesCount] = boxes[5*i];
+            boxes[5*currentBoxesCount+1] = boxes[5*i+1];
+            boxes[5*currentBoxesCount+2] = boxes[5*i+2];
+            boxes[5*currentBoxesCount+3] = boxes[5*i+3];
+            boxes[5*currentBoxesCount+4] = outputProb[probIndex];
+
+            outputReg[4*currentBoxesCount] = outputReg[4*i];
+            outputReg[4*currentBoxesCount+1] = outputReg[4*i+1];
+            outputReg[4*currentBoxesCount+2] = outputReg[4*i+2];
+            outputReg[4*currentBoxesCount+3] = outputReg[4*i+3];
+            ++currentBoxesCount;
+        }
+    }
+//    float expectedOutput05[] = {39.20829, 27.62577, 79.92749, 68.34497, 0.90366, 19.89625, 21.46569, 77.53975, 79.10919, 0.99956, 15.83533, 21.06518, 87.24639, 92.47623, 0.99704};
+//    for (size_t i=0;i<15;++i){
+//        printf("Output [%d]: %f\n", i, boxes[i]);
+//        assert(equalFloatDefault(boxes[i], expectedOutput05[i]));
+//    }
+//    float expectedOutput15[] = { -0.18486, -0.1617, -0.14764, 0.19548, 0.03958, -0.02145, -0.11738, -0.0546, 0.1054, -0.01394, -0.18461, -0.1425};
+//    for (size_t i=0;i<12;++i){
+//        printf("Output [%d]: %f\n", i, outputReg[i]);
+//        assert(equalFloatDefault(outputReg[i], expectedOutput15[i]));
+//    }
     int x = 0;
 }
 

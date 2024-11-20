@@ -72,6 +72,8 @@ int main() {
 //    CNNTest_Permute0();
 //    CNNTest_Permute1();
 ////    CNNTest_Permute2();
+//    CNNTest_Permute3();
+//    CNNTest_Permute4();
 //    CNNTest_BoxIou0();
 //    CNNTest_BoxIou1();
 //    CNNTest_BoxNms0();

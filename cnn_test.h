@@ -51,6 +51,8 @@ void CNNTest_Softmax2D2();
 void CNNTest_Permute0();
 void CNNTest_Permute1();
 void CNNTest_Permute2();
+void CNNTest_Permute3();
+void CNNTest_Permute4();
 void CNNTest_BoxIou0();
 void CNNTest_BoxIou1();
 void CNNTest_BoxNms0();
