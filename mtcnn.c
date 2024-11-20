@@ -22,7 +22,7 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
     float factor = 0.709;
     float iouThresholdPNet0 = 0.5;
     float iouThresholdPNet1 = 0.5;
-    float iouThresholdRNet = 0.05;
+    float iouThresholdRNet = 0.1;
 
     // scale pyramid
     float m = 12.0 / minSize;
@@ -271,7 +271,38 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
 //        printf("Output [%d]: %f\n", i, outputReg[i]);
 //        assert(equalFloatDefault(outputReg[i], expectedOutput15[i]));
 //    }
-    int x = 0;
+    int boxIndexes[currentBoxesCount];
+    currentBoxesCount = MTCNN_BoxNmsIdx(currentBoxesCount, boxes, iouThresholdRNet, boxIndexes);
+    for (size_t i=0;i<currentBoxesCount;++i){
+        size_t inputIndex = boxIndexes[i];
+        for (size_t j=0;j<5;++j){
+            boxes[5*i+j] = boxes[5*inputIndex+j];
+        }
+        for (size_t j=0;j<4;++j){
+            outputReg[4*i+j] = outputReg[4*inputIndex+j];
+        }
+    }
+    for (size_t i=0;i<currentBoxesCount;++i) {
+        size_t boxesIndex = 5*i;
+        size_t regIndex = 4*i;
+        float w = boxes[boxesIndex+2] - boxes[boxesIndex] + 1;
+        float h = boxes[boxesIndex+3] - boxes[boxesIndex+1] + 1;
+        boxes[boxesIndex] = boxes[boxesIndex] + outputReg[regIndex] * w;
+        boxes[boxesIndex+1] = boxes[boxesIndex+1] + outputReg[regIndex+1] * h;
+        boxes[boxesIndex+2] = boxes[boxesIndex+2] + outputReg[regIndex+2] * w;
+        boxes[boxesIndex+3] = boxes[boxesIndex+3] + outputReg[regIndex+3] * h;
+    }
+//    float expectedOutput06[] = {22.21715, 20.20803, 70.65629, 75.90701, 0.99956};
+//    for (size_t i=0;i<5;++i){
+//        printf("Output [%d]: %f\n", i, boxes[i]);
+//        assert(equalFloat(boxes[i], expectedOutput06[i], 0.01f));
+//    }
+    MTCNN_Rerec(currentBoxesCount, boxes);
+    for (size_t i=0;i<currentBoxesCount*5;i+=5) {
+        for (size_t j=0;j<5;++j){
+            output[i+j] = boxes[i+j];
+        }
+    }
 }
 
 void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float* reg, const float* score, float scale, float threshold, float* output){
@@ -387,6 +418,47 @@ int MTCNN_BoxNms(size_t boxesLen, const float* boxes, float iouThreshold, float*
     return outputBoxesLen;
 }
 
+int MTCNN_BoxNmsIdx(size_t boxesLen, const float* boxes, float iouThreshold, int* boxesIndexes){
+    int indexes[boxesLen];
+    for (size_t i=0;i<boxesLen;++i){
+        indexes[i] = -1;
+    }
+    for (size_t i=0;i<boxesLen*5;i+=5){
+        if (indexes[i/5] == -2)
+            continue;
+        for (size_t j=i+5;j<boxesLen*5;j+=5){
+            if (indexes[j/5] == -2)
+                continue;
+
+            float iou = CNN_Iou(boxes[i], boxes[i+1], boxes[i+2], boxes[i+3], boxes[j], boxes[j+1], boxes[j+2], boxes[j+3]);
+            int boxI = i;
+            int boxJ = j;
+
+            if (iou > iouThreshold){
+                if (boxes[i+4] >= boxes[j+4]){
+                    boxJ = -2;
+                }
+                else{
+                    boxI = -2;
+                }
+            }
+            indexes[i/5] = boxI;
+            indexes[j/5] = boxJ;
+            if (boxI == -2)
+                break;
+        }
+    }
+    size_t outputIndex = 0;
+    for (size_t i=0;i<boxesLen;++i){
+        int inputIndex = indexes[i];
+        if (inputIndex < 0)
+            continue;
+        boxesIndexes[outputIndex] = inputIndex/5;
+        ++outputIndex;
+    }
+    return outputIndex;
+}
+
 void MTCNN_Rerec(size_t boxesLen, float* boxes){
     for (size_t i=0;i<boxesLen*5;i+=5){
         float w = boxes[i+2] - boxes[i];
@@ -408,4 +480,8 @@ void MTCNN_Pad(size_t inputHeight, size_t inputWidth, size_t boxesLen, float* bo
         output[outputIndex+3] = boxes[i+3] > inputHeight ? inputHeight : boxes[i+3];
         outputIndex += 4;
     }
+}
+
+void MTCNN_Bbreg(size_t boxesLen, const float* reg, float* boxes){
+
 }

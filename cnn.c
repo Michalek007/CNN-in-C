@@ -331,7 +331,7 @@ float CNN_Iou(float x, float y, float x2, float y2, float xp, float yp, float x2
     return overlapArea / (area + area2 - overlapArea);
 }
 
-void CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, float* output){
+int CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, float* output){
     int indexes[boxesLen];
     for (size_t i=0;i<boxesLen;++i){
         indexes[i] = -1;
@@ -372,9 +372,10 @@ void CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float 
         output[outputIndex+3] = boxes[inputIndex+3];
         outputIndex += 4;
     }
+    return outputIndex/4;
 }
 
-void CNN_BoxNmsIdx(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, int* boxesIndexes){
+int CNN_BoxNmsIdx(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, int* boxesIndexes){
     int indexes[boxesLen];
     for (size_t i=0;i<boxesLen;++i){
         indexes[i] = -1;
@@ -412,6 +413,7 @@ void CNN_BoxNmsIdx(size_t boxesLen, const float* boxes, const float* scores, flo
         boxesIndexes[outputIndex] = inputIndex/4;
         ++outputIndex;
     }
+    return outputIndex;
 }
 
 void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const float* input, float* output){

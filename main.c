@@ -24,8 +24,8 @@ int main() {
 //    MTCNNTest_BoxNms3();
 //    MTCNNTest_BoxNms4();
 //    MTCNNTest_Rerec0();
-//    MTCNNTest_DetectFace0();
 //    MTCNNTest_Pad0();
+    MTCNNTest_DetectFace0();
     MTCNNTest_DetectFace1();
     MTCNNTest_DetectFace2();
     return 0;

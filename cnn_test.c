@@ -799,7 +799,8 @@ void CNNTest_BoxNms0(){
     const float boxes[] = {50.0, 50.0, 70.0, 70.0, 10.0, 10.0, 20.0, 20.0, 40.0, 40.0, 70.0, 70.0, 60.0, 60.0, 80.0, 80.0};
     const float scores[] = {0.8, 0.1, 0.1, 0.1};
     float output[4*4];
-    CNN_BoxNms(4, boxes, scores, 0.3, output);
+    int outputLen = CNN_BoxNms(4, boxes, scores, 0.3, output);
+    assert(outputLen == 3);
     float expectedOutput[] = {50.0, 50.0, 70.0, 70.0, 10.0, 10.0, 20.0, 20.0, 60.0, 60.0, 80.0, 80.0};
     for (size_t i=0;i<12;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -879,7 +880,8 @@ void CNNTest_BoxNmsIdx0(){
     const float boxes[] = {50.0, 50.0, 70.0, 70.0, 10.0, 10.0, 20.0, 20.0, 40.0, 40.0, 70.0, 70.0, 60.0, 60.0, 80.0, 80.0};
     const float scores[] = {0.8, 0.1, 0.1, 0.1};
     int output[4];
-    CNN_BoxNmsIdx(4, boxes, scores, 0.3, output);
+    int outputLen = CNN_BoxNmsIdx(4, boxes, scores, 0.3, output);
+    assert(outputLen == 3);
     int expectedOutput[] = {0, 1, 3};
     for (size_t i=0;i<3;++i){
         printf("Output [%d]: %d\n", i, output[i]);

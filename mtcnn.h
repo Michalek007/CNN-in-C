@@ -13,8 +13,12 @@ void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const floa
 
 int MTCNN_BoxNms(size_t boxesLen, const float* boxes, float iouThreshold, float* output);
 
+int MTCNN_BoxNmsIdx(size_t boxesLen, const float* boxes, float iouThreshold, int* boxesIndexes);
+
 void MTCNN_Rerec(size_t boxesLen, float* boxes);
 
 void MTCNN_Pad(size_t inputHeight, size_t inputWidth, size_t boxesLen, float* boxes, int* output);
+
+void MTCNN_Bbreg(size_t boxesLen, const float* reg, float* boxes);
 
 #endif //CNN_MTCNN_H

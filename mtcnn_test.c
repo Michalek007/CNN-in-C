@@ -29,14 +29,18 @@ void MTCNNTest_GenerateBoundingBox2(){
 }
 
 void MTCNNTest_DetectFace0(){
-    const float input[3*405*362];
-    float output[4*10];
-    MTCNN_DetectFace(3, 450, 362, input, output);
+    size_t maxBoxesCount = 5;
+    float output[5*maxBoxesCount];
+    MTCNN_DetectFace(3, 100, 100, detectFaceInput0, output);
+    float expectedOutput[] = {18.58723, 20.20803, 74.28621, 75.90701, 0.99956};
+    for (size_t i=0;i<5;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloat(output[i], expectedOutput[i], 0.01f));
+    }
 }
 
 void MTCNNTest_DetectFace1(){
-    float output[4*10];
-    MTCNN_DetectFace(3, 100, 100, detectFaceInput0, output);
+
 }
 
 void MTCNNTest_DetectFace2(){
