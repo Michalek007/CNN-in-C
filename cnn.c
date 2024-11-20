@@ -24,23 +24,23 @@ void CNN_ConvLayerForward_(size_t inputChannels, size_t inputHeight, size_t inpu
     assert(outputHeight>0);
     assert(outputWidth>0);
 
+    int hasPadding = 0;
+    int paddingTop, paddingLeft, paddingRight, paddingBottom;
+    size_t oldHeight, oldWidth;
     if (paddingH != 0 || paddingW != 0){
+        oldHeight = inputHeight;
+        oldWidth = inputWidth;
         int newHeight = inputHeight+2*paddingH;
         int newWidth = inputWidth+2*paddingW;
-        size_t newInputSize = inputChannels*newHeight*newWidth*sizeof(float);
-        float *newInput = (float*) malloc(newInputSize);
-        assert(newInput != NULL);
-        memset(newInput, 0, newInputSize);
-
-        for (size_t o=0;o<inputChannels;++o){
-            for (int i=0;i<inputHeight;i++){
-                memcpy(newInput+o*newWidth*newHeight+(newWidth*paddingH)+paddingW+i*newWidth, input+o*inputWidth*inputHeight+i*inputWidth, inputWidth*sizeof(float));
-            }
-        }
-
-        input = newInput;
+        hasPadding = 1;
         inputHeight = newHeight;
         inputWidth = newWidth;
+
+        paddingTop = paddingH;
+        paddingLeft = paddingW;
+        paddingRight = paddingW;
+        paddingBottom = paddingH;
+
     }
 
     for (size_t o=0;o<outputChannels;++o){
@@ -52,7 +52,24 @@ void CNN_ConvLayerForward_(size_t inputChannels, size_t inputHeight, size_t inpu
                         for (size_t l=0;l<kernelWidth;l++){
                             int weightsIndex = o*kernelWidth*kernelHeight*inputChannels + p*kernelWidth*kernelHeight + k*kernelWidth +l;
                             int inputIndex = p*inputHeight*inputWidth + (i*strideH+k)*inputWidth + j*strideW + l;
-                            outputValue += input[inputIndex] * weights[weightsIndex];
+                            float inputValue;
+                            if (hasPadding){
+                                inputIndex -= p*inputHeight*inputWidth;
+                                size_t row = inputIndex / inputWidth;
+                                size_t column = inputIndex % inputWidth;
+                                if (row < paddingTop || row >= inputHeight - paddingBottom || column < paddingLeft || column >= inputWidth - paddingRight){
+                                    inputValue = 0;
+                                }
+                                else{
+                                    inputIndex = inputIndex - inputWidth*row - paddingLeft + oldWidth*(row-paddingTop); // last=> oldWidth*oldInputRow
+                                    inputIndex += p*oldHeight*oldWidth;
+                                    inputValue = input[inputIndex];
+                                }
+                            }
+                            else{
+                                inputValue = input[inputIndex];
+                            }
+                            outputValue += inputValue * weights[weightsIndex];
                         }
                     }
                 }
@@ -101,17 +118,22 @@ void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputW
     }
 
     int hasPadding = 0;
+    int paddingTop, paddingLeft;
+    size_t oldHeight, oldWidth;
     if (paddingH != 0 || paddingW != 0 || paddingRight !=0 || paddingBottom != 0){
+        oldHeight = inputHeight;
+        oldWidth = inputWidth;
         int newHeight = inputHeight+2*paddingH + paddingBottom;
         int newWidth = inputWidth+2*paddingW + paddingRight;
         hasPadding = 1;
         inputHeight = newHeight;
         inputWidth = newWidth;
+
+        paddingTop = paddingH;
+        paddingLeft = paddingW;
+        paddingRight += paddingW;
+        paddingBottom += paddingH;
     }
-    int paddingTop = paddingH;
-    int paddingLeft = paddingW;
-    paddingRight += paddingW;
-    paddingBottom += paddingH;
 
     for (size_t o=0;o<inputChannels;++o){
         for (size_t i=0;i<outputHeight;i++){
@@ -129,8 +151,8 @@ void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputW
                                 targetValue = -FLT_MAX;
                             }
                             else{
-                                inputIndex = inputIndex - inputWidth*row - paddingLeft + (inputWidth-paddingLeft-paddingRight)*(row-paddingTop); // last=> oldInputWidth*oldInputRow
-                                inputIndex += o*(inputHeight-paddingTop-paddingBottom)*(inputWidth-paddingLeft-paddingRight); // o * oldInputHeight * oldInputWidth
+                                inputIndex = inputIndex - inputWidth*row - paddingLeft + oldWidth*(row-paddingTop); // last=> oldWidth*oldInputRow
+                                inputIndex += o*oldHeight*oldWidth;
                                 targetValue = input[inputIndex];
                             }
                         }
