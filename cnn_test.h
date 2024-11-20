@@ -56,7 +56,7 @@ void CNNTest_Permute4();
 void CNNTest_BoxIou0();
 void CNNTest_BoxIou1();
 void CNNTest_BoxNms0();
-void CNNTest_BoxNms1();
+void CNNTest_BoxNmsIdx0();
 void CNNTest_AdaptiveAveragePool0();
 void CNNTest_AdaptiveAveragePool1();
 void CNNTest_AdaptiveAveragePool2();

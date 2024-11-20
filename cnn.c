@@ -332,8 +332,7 @@ float CNN_Iou(float x, float y, float x2, float y2, float xp, float yp, float x2
 }
 
 void CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, float* output){
-
-    int* indexes = calloc(4*boxesLen, 4*boxesLen*sizeof(int));
+    int indexes[boxesLen];
     for (size_t i=0;i<boxesLen;++i){
         indexes[i] = -1;
     }
@@ -373,7 +372,46 @@ void CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float 
         output[outputIndex+3] = boxes[inputIndex+3];
         outputIndex += 4;
     }
-    free(indexes);
+}
+
+void CNN_BoxNmsIdx(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, int* boxesIndexes){
+    int indexes[boxesLen];
+    for (size_t i=0;i<boxesLen;++i){
+        indexes[i] = -1;
+    }
+    for (size_t i=0;i<boxesLen*4;i+=4){
+        if (indexes[i/4] == -2)
+            continue;
+        for (size_t j=i+4;j<boxesLen*4;j+=4){
+            if (indexes[j/4] == -2)
+                continue;
+
+            float iou = CNN_Iou(boxes[i], boxes[i+1], boxes[i+2], boxes[i+3], boxes[j], boxes[j+1], boxes[j+2], boxes[j+3]);
+            int boxI = i;
+            int boxJ = j;
+
+            if (iou > iouThreshold){
+                if (scores[i/4] >= scores[j/4]){
+                    boxJ = -2;
+                }
+                else{
+                    boxI = -2;
+                }
+            }
+            indexes[i/4] = boxI;
+            indexes[j/4] = boxJ;
+            if (boxI == -2)
+                break;
+        }
+    }
+    size_t outputIndex = 0;
+    for (size_t i=0;i<boxesLen;++i){
+        int inputIndex = indexes[i];
+        if (inputIndex < 0)
+            continue;
+        boxesIndexes[outputIndex] = inputIndex/4;
+        ++outputIndex;
+    }
 }
 
 void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const float* input, float* output){

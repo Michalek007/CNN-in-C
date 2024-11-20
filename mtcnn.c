@@ -337,7 +337,7 @@ int MTCNN_BoxNms(size_t boxesLen, const float* boxes, float iouThreshold, float*
         memcpy(output, boxes, 9*sizeof(float));
         return 1;
     }
-    int* indexes = calloc(boxesLen, boxesLen*sizeof(int));
+    int indexes[boxesLen];
     for (size_t i=0;i<boxesLen;++i){
         indexes[i] = -1;
     }
@@ -384,7 +384,6 @@ int MTCNN_BoxNms(size_t boxesLen, const float* boxes, float iouThreshold, float*
         outputIndex += 9;
         ++outputBoxesLen;
     }
-    free(indexes);
     return outputBoxesLen;
 }
 

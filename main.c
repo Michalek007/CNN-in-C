@@ -77,7 +77,7 @@ int main() {
 //    CNNTest_BoxIou0();
 //    CNNTest_BoxIou1();
 //    CNNTest_BoxNms0();
-//    CNNTest_BoxNms1();
+//    CNNTest_BoxNmsIdx0();
 //    CNNTest_AdaptiveAveragePool0();
 //    CNNTest_AdaptiveAveragePool1();
 //    CNNTest_AdaptiveAveragePool2();

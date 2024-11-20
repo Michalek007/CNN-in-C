@@ -37,6 +37,8 @@ float CNN_Iou(float x, float y, float x2, float y2, float xp, float yp, float x2
 
 void CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, float* output);
 
+void CNN_BoxNmsIdx(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, int* boxesIndexes);
+
 void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const float* input, float* output);
 
 #endif //CNN_CNN_H
