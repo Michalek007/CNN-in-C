@@ -12,8 +12,10 @@
 #include "dev_data.h"
 #include "cnn_test.h"
 #include "pnet.h"
+#include "rnet.h"
 
 void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, float* output){
+    // input consist uint8_t only -> type must be change
     float thresholdPNet = 0.9;
     float thresholdRNet = 0.9;
     float minSize = 20;
@@ -161,6 +163,9 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
     int padArray[currentBoxesCount*4];
     MTCNN_Pad(inputHeight, inputWidth, currentBoxesCount, boxes, padArray);
 
+    float outputReg[currentBoxesCount*4];
+    float outputProb[currentBoxesCount*2];
+    size_t currentRegCount = 0;
     for (size_t i=0;i<currentBoxesCount*4;i+=4){
         size_t startH = padArray[i+1]-1;
         size_t stopH = padArray[i+3];
@@ -170,7 +175,7 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
             continue;
         size_t newHeight = stopH-startH;
         size_t newWidth = stopW-startW;
-        float newInput[inputChannels*newHeight*newWidth];
+        float newInput[inputChannels*newHeight*newWidth]; //uint8
         for (size_t o=0;o<inputChannels;++o){
             for (size_t j=startH;j<stopH;++j){
                 size_t inputIndex = o*inputWidth*inputHeight + inputWidth*j + startW;
@@ -214,7 +219,34 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
 //                assert(equalFloatDefault(newInput[k], expectedOutput52[k]));
 //            }
 //        }
+        float scaledInput[inputChannels*24*24];
+        CNN_AdaptiveAveragePool(inputChannels, newHeight, newWidth, 24, 24, newInput, scaledInput);
+//        if (i/4 == 1){
+//            for (size_t k=0;k<1728;++k){
+//                printf("Output [%d]: %f\n", k, scaledInput[k]);
+//                assert(equalFloatDefault(scaledInput[k], expectedOutput03[k]));
+//            }
+//        }
+        for (size_t j=0;j<inputChannels*24*24;++j){
+            scaledInput[j] = (scaledInput[j] - 127.5f) * 0.0078125f;
+        }
+        RNet_Model(scaledInput, outputReg+4*currentRegCount, outputProb+2*currentRegCount);
+        ++currentRegCount;
     }
+    float expectedOutput04[] = {-0.12459, -0.0593, 0.22122, 0.73505, -0.11502, -0.12154, 0.21121, 0.48961, -0.05304, -0.05735, 0.13819, 0.47433, -0.18486, -0.1617, -0.14764, 0.19548,  0.03958, -0.02145, -0.11738, -0.0546, 0.1054, -0.01394, -0.18461, -0.1425};
+//    for (size_t i=0;i<24;++i){
+//        printf("Output [%d]: %f\n", i, outputReg[i]);
+//        assert(equalFloatDefault(outputReg[i], expectedOutput04[i]));
+//    }
+//    float expectedOutput14[] = {0.99771, 0.00229, 0.99613, 0.00387, 0.99804, 0.00196, 0.09634, 0.90366, 0.00044, 0.99956, 0.00296, 0.99704};
+//    for (size_t i=0;i<12;++i){
+//        printf("Output [%d]: %f\n", i, outputProb[i]);
+//        assert(equalFloatDefault(outputProb[i], expectedOutput14[i]));
+//    }
+    float newOutputReg[currentBoxesCount*4];
+    float newOutputProb[currentBoxesCount*2];
+    CNN_Permute(1, currentBoxesCount, 4, 0, 2, 1, outputReg, newOutputReg);
+    CNN_Permute(1, currentBoxesCount, 2, 0, 2, 1, outputProb, newOutputProb);
     int x = 0;
 }
 
