@@ -131,6 +131,9 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
         currentBoxesCount += MTCNN_BoxNms(boxesLen, outputBox, iouThresholdPNet0, boxes+currentBoxesCount*9);
 //        free(scaledOutput);
     }
+    if (currentBoxesCount == 0)
+        return;
+
     currentBoxesCount = MTCNN_BoxNms(currentBoxesCount, boxes, iouThresholdPNet1, boxes);
 //    float expectedOutput[] = {51.0, 21.0, 70.0, 40.0, 0.9039, -0.03787, 0.01272, 0.00483, 0.22522, 54.0, 28.0, 73.0, 46.0, 0.95487, -0.05535, 0.12994, -0.09492, 0.26756, 44.0, 25.0, 70.0, 51.0, 0.92829, 0.11208, 0.01449, 0.05255, 0.14467, 43.0, 29.0, 79.0, 66.0, 0.97301, 0.02569, -0.03714, -0.10525, 0.06338, 23.0, 23.0, 74.0, 74.0, 0.99966, 0.03534, -0.03008, -0.0268, 0.10018, 19.0, 19.0, 92.0, 92.0, 0.99322, 0.09031, 0.02829, -0.19878, 0.00652};
 //    for (size_t i=0;i<54;++i){
@@ -158,6 +161,60 @@ void MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidt
     int padArray[currentBoxesCount*4];
     MTCNN_Pad(inputHeight, inputWidth, currentBoxesCount, boxes, padArray);
 
+    for (size_t i=0;i<currentBoxesCount*4;i+=4){
+        size_t startH = padArray[i+1]-1;
+        size_t stopH = padArray[i+3];
+        size_t startW = padArray[i]-1;
+        size_t stopW = padArray[i+2];
+        if (stopH <= startH || stopW <= startW)
+            continue;
+        size_t newHeight = stopH-startH;
+        size_t newWidth = stopW-startW;
+        float newInput[inputChannels*newHeight*newWidth];
+        for (size_t o=0;o<inputChannels;++o){
+            for (size_t j=startH;j<stopH;++j){
+                size_t inputIndex = o*inputWidth*inputHeight + inputWidth*j + startW;
+                size_t newInputIndex = o*newWidth*newHeight + (j-startH)*newWidth;
+                memcpy(newInput+newInputIndex, input+inputIndex, newWidth*sizeof(float));
+            }
+        }
+//        if (i/4 == 0){
+//            for (size_t k=0;k<1728;++k){
+//                printf("Output [%d]: %f\n", k, newInput[k]);
+//                assert(equalFloatDefault(newInput[k], expectedOutput02[k]));
+//            }
+//        }
+//        else if (i/4 == 1){
+//            for (size_t k=0;k<1386;++k){
+//                printf("Output [%d]: %f\n", k, newInput[k]);
+//                assert(equalFloatDefault(newInput[k], expectedOutput12[k]));
+//            }
+//        }
+//        else if (i/4 == 2){
+//            for (size_t k=0;k<2700;++k){
+//                printf("Output [%d]: %f\n", k, newInput[k]);
+//                assert(equalFloatDefault(newInput[k], expectedOutput22[k]));
+//            }
+//        }
+//        else if (i/4 == 3){
+//            for (size_t k=0;k<5166;++k){
+//                printf("Output [%d]: %f\n", k, newInput[k]);
+//                assert(equalFloatDefault(newInput[k], expectedOutput32[k]));
+//            }
+//        }
+//        else if (i/4 == 4){
+//            for (size_t k=0;k<10443;++k){
+//                printf("Output [%d]: %f\n", k, newInput[k]);
+//                assert(equalFloatDefault(newInput[k], expectedOutput42[k]));
+//            }
+//        }
+//        else if (i/4 == 5){
+//            for (size_t k=0;k<15768;++k){
+//                printf("Output [%d]: %f\n", k, newInput[k]);
+//                assert(equalFloatDefault(newInput[k], expectedOutput52[k]));
+//            }
+//        }
+    }
     int x = 0;
 }
 

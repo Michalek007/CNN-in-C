@@ -10,9 +10,9 @@
 int main() {
     printf("Hello, World!\n");
 
-    RNetTest_Model0();
-    PnetTest_Model0();
-    return 0;
+//    RNetTest_Model0();
+//    PnetTest_Model0();
+//    return 0;
 
 
 //    MTCNNTest_GenerateBoundingBox0();
