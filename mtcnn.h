@@ -6,10 +6,11 @@
 #define CNN_MTCNN_H
 
 #include <stddef.h>
+#include <stdint.h>
 
-int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, float* output);
+int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const uint8_t* input, float* output);
 
-void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float* reg, const float* score, float scale, float threshold, float* output);
+int MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float* reg, const float* score, float scale, float threshold, float* output);
 
 int MTCNN_BoxNms(size_t boxesLen, const float* boxes, float iouThreshold, float* output);
 

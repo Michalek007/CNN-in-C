@@ -14,38 +14,40 @@
 #include "pnet.h"
 #include "rnet.h"
 
-int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const float* input, float* output){
-    // input consist uint8_t only -> type must be change
-    float thresholdPNet = 0.9;
-    float thresholdRNet = 0.9;
-    float minSize = 20;
-    float factor = 0.709;
-    float iouThresholdPNet0 = 0.5;
-    float iouThresholdPNet1 = 0.5;
-    float iouThresholdRNet = 0.1;
+int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const uint8_t* input, float* output){
+    const float thresholdPNet = 0.9;
+    const float thresholdRNet = 0.9;
+    const float minSize = 20;
+    const float factor = 0.709;
+    const float iouThresholdPNet0 = 0.5;
+    const float iouThresholdPNet1 = 0.5;
+    const float iouThresholdRNet = 0.1;
 
     // scale pyramid
     float m = 12.0 / minSize;
     float minL = fminf(inputHeight, inputWidth) * m;
     float scaleI = m;
-    float* scales = malloc(10*sizeof(float));
+    size_t maxScaleSize = 10;
+    float scales[maxScaleSize];
     size_t scalesSize;
     for (scalesSize=0;minL>=12.0;minL*=factor){
         scales[scalesSize] = scaleI;
         scaleI *= factor;
         ++scalesSize;
+        if (scalesSize >= maxScaleSize){
+            break;
+        }
     }
 
     size_t maxBoxesPerScale = 10; // should be given as argument
     size_t boxesMaxSize = scalesSize*9*maxBoxesPerScale; // or this
     float boxes[boxesMaxSize];
     size_t currentBoxesCount = 0;
-    memset(boxes, 0, boxesMaxSize*sizeof(float));
     for (size_t i=0;i<scalesSize;++i){
         size_t outputHeight = inputHeight*scales[i]+1;
         size_t outputWidth = inputWidth*scales[i]+1;
         float* scaledOutput = malloc(inputChannels*outputHeight*outputWidth*sizeof(float));
-        CNN_AdaptiveAveragePool(inputChannels, inputHeight, inputWidth, outputHeight, outputWidth, input, scaledOutput);
+        CNN_AdaptiveAveragePool_Uint8(inputChannels, inputHeight, inputWidth, outputHeight, outputWidth, input, scaledOutput);
 //        if (i == 0){
 //            for (size_t j=0;j<11163;++j){
 //                printf("Output [%d]: %f\n", j, scaledOutput[j]);
@@ -90,8 +92,7 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
         size_t outputBoxMaxSize = 9*regOutputHeight*regOutputWidth;
 //        size_t outputBoxMaxSize = 9*maxBoxesPerScale;
         float outputBox[outputBoxMaxSize];
-        memset(outputBox, 0, outputBoxMaxSize*sizeof(float));
-        MTCNN_GenerateBoundingBox(regOutputHeight, regOutputWidth, outputReg, outputProb, scales[i], thresholdPNet, outputBox);
+        size_t boxesLen = MTCNN_GenerateBoundingBox(regOutputHeight, regOutputWidth, outputReg, outputProb, scales[i], thresholdPNet, outputBox);
 
 //        if (i == 0){
 //            for (size_t j=0;j<18;++j){
@@ -123,13 +124,6 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
 //                assert(equalFloatDefault(outputBox[j], expectedOutput41[j]));
 //            }
 //        }
-        size_t boxesLen = 0;
-        for (size_t j=0; j<outputBoxMaxSize;j+=9){
-            if (outputBox[j] == 0){
-                break;
-            }
-            ++boxesLen;
-        }
         currentBoxesCount += MTCNN_BoxNms(boxesLen, outputBox, iouThresholdPNet0, boxes+currentBoxesCount*9);
 //        free(scaledOutput);
     }
@@ -175,12 +169,12 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
             continue;
         size_t newHeight = stopH-startH;
         size_t newWidth = stopW-startW;
-        float newInput[inputChannels*newHeight*newWidth]; //uint8
+        uint8_t newInput[inputChannels*newHeight*newWidth];
         for (size_t o=0;o<inputChannels;++o){
             for (size_t j=startH;j<stopH;++j){
                 size_t inputIndex = o*inputWidth*inputHeight + inputWidth*j + startW;
                 size_t newInputIndex = o*newWidth*newHeight + (j-startH)*newWidth;
-                memcpy(newInput+newInputIndex, input+inputIndex, newWidth*sizeof(float));
+                memcpy(newInput+newInputIndex, input+inputIndex, newWidth*sizeof(uint8_t));
             }
         }
 //        if (i/4 == 0){
@@ -220,7 +214,7 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
 //            }
 //        }
         float scaledInput[inputChannels*24*24];
-        CNN_AdaptiveAveragePool(inputChannels, newHeight, newWidth, 24, 24, newInput, scaledInput);
+        CNN_AdaptiveAveragePool_Uint8(inputChannels, newHeight, newWidth, 24, 24, newInput, scaledInput);
 //        if (i/4 == 1){
 //            for (size_t k=0;k<1728;++k){
 //                printf("Output [%d]: %f\n", k, scaledInput[k]);
@@ -306,7 +300,7 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
     return currentBoxesCount;
 }
 
-void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float* reg, const float* score, float scale, float threshold, float* output){
+int MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float* reg, const float* score, float scale, float threshold, float* output){
     int stride = 2;
     int cellSize = 12;
 
@@ -362,6 +356,7 @@ void MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const floa
         output[9*i+8] = newReg[4*i+3];
     }
     free(indexes);
+    return idx;
 }
 
 int MTCNN_BoxNms(size_t boxesLen, const float* boxes, float iouThreshold, float* output){

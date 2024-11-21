@@ -6,6 +6,7 @@
 #define CNN_CNN_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, const float* weights, const float* biases, float* output);
 
@@ -40,5 +41,7 @@ int CNN_BoxNms(size_t boxesLen, const float* boxes, const float* scores, float i
 int CNN_BoxNmsIdx(size_t boxesLen, const float* boxes, const float* scores, float iouThreshold, int* boxesIndexes);
 
 void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const float* input, float* output);
+
+void CNN_AdaptiveAveragePool_Uint8(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, float* output);
 
 #endif //CNN_CNN_H

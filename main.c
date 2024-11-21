@@ -10,6 +10,9 @@
 int main() {
     printf("Hello, World!\n");
 
+//    CNNTest_Dev();
+//    return 0;
+
 //    RNetTest_Model0();
 //    PnetTest_Model0();
 //    return 0;
@@ -30,9 +33,6 @@ int main() {
     MTCNNTest_DetectFace2();
     MTCNNTest_DetectFace3();
     return 0;
-
-//    CNNTest_Dev();
-//    return 0;
 
     CNNTest_FcLayer0();
     CNNTest_FcLayer1();
