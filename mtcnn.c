@@ -14,6 +14,7 @@
 #include "pnet.h"
 #include "rnet.h"
 
+
 int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth, const uint8_t* input, float* output){
     const float thresholdPNet = 0.9;
     const float thresholdRNet = 0.9;
@@ -27,16 +28,13 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
     float m = 12.0 / minSize;
     float minL = fminf(inputHeight, inputWidth) * m;
     float scaleI = m;
-    size_t maxScaleSize = 10;
+    size_t maxScaleSize = ceilf(logf(12/minL)/logf(factor));
     float scales[maxScaleSize];
     size_t scalesSize;
     for (scalesSize=0;minL>=12.0;minL*=factor){
         scales[scalesSize] = scaleI;
         scaleI *= factor;
         ++scalesSize;
-        if (scalesSize >= maxScaleSize){
-            break;
-        }
     }
 
     size_t maxBoxesPerScale = 10; // should be given as argument
@@ -46,7 +44,7 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
     for (size_t i=0;i<scalesSize;++i){
         size_t outputHeight = inputHeight*scales[i]+1;
         size_t outputWidth = inputWidth*scales[i]+1;
-        float* scaledOutput = malloc(inputChannels*outputHeight*outputWidth*sizeof(float));
+        float scaledOutput[inputChannels*outputHeight*outputWidth];
         CNN_AdaptiveAveragePool_Uint8(inputChannels, inputHeight, inputWidth, outputHeight, outputWidth, input, scaledOutput);
 //        if (i == 0){
 //            for (size_t j=0;j<11163;++j){
@@ -304,20 +302,16 @@ int MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float
     int stride = 2;
     int cellSize = 12;
 
-    size_t indexesSize = 10;
-    int* indexes = calloc(indexesSize, indexesSize*sizeof(int)); // array must be created using malloc & size must be dynamically modified if exceeds max size
+    size_t maxIndexesSize = inputHeight * inputWidth;
+    int indexes[maxIndexesSize];
     size_t idx = 0;
     for (size_t i=0;i<inputHeight;++i){
         for (size_t j=0;j<inputWidth;++j){
             size_t index = inputWidth*inputHeight + i*inputWidth + j; // equivalent to: score[1][i][j]
             if (score[index] > threshold){
-                if (idx >= indexesSize){
-                    indexesSize += 10;
-                    int* newIndexes = calloc(indexesSize, indexesSize*sizeof(int));
-                    memcpy(newIndexes, indexes, (indexesSize-10)*sizeof(int));
-                    free(indexes);
-                    indexes = newIndexes;
-                }
+//                if (idx >= MAX_INDEX_SIZE){
+//                    break;
+//                }
                 indexes[idx] = index - inputWidth*inputHeight;
                 ++idx;
             }
@@ -355,7 +349,6 @@ int MTCNN_GenerateBoundingBox(size_t inputHeight, size_t inputWidth, const float
         output[9*i+7] = newReg[4*i+2];
         output[9*i+8] = newReg[4*i+3];
     }
-    free(indexes);
     return idx;
 }
 
