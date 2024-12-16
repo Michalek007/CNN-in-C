@@ -3,4 +3,8 @@ project(CNN C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(CNN main.c cnn.c cnn_test.c cnn_test.h cnn_test_networks.c mtcnn.c mtcnn_test.c pnet.c pnet_test.c rnet.c rnet_test.c)
+add_executable(CNN main.c src/cnn.c tests/cnn_test.c tests/cnn_test_networks.c models/mtcnn.c tests/mtcnn_test.c models/pnet.c tests/pnet_test.c models/rnet.c tests/rnet_test.c)
+
+target_include_directories(CNN PRIVATE src/include)
+target_include_directories(CNN PRIVATE models/include)
+target_include_directories(CNN PRIVATE tests/include)
