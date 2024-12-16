@@ -9,6 +9,7 @@
 #include <assert.h>
 #include "cnn_test.h"
 #include "cnn.h"
+#include "cnn_test_data.h"
 
 void CNNTest_Dev(){
 
@@ -886,6 +887,16 @@ void CNNTest_BoxNmsIdx0(){
     for (size_t i=0;i<3;++i){
         printf("Output [%d]: %d\n", i, output[i]);
         assert(output[i] == expectedOutput[i]);
+    }
+}
+
+void CNNTest_AdaptiveAveragePool4(){
+
+    uint8_t output[60*80*3];
+    CNN_AdaptiveAveragePool_Uint8_Uint8(3, 120, 160, 60, 80, AdaptiveAveragePool4_input120_160, output);
+    for (size_t i=0;i<60*80*3;++i){
+        printf("Output [%d]: %d\n", i, output[i]);
+        assert(output[i] == (int)roundf(AdaptiveAveragePool4_expectedOutput60_80[i]));
     }
 }
 

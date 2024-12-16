@@ -9,6 +9,7 @@
 #include "mtcnn.h"
 #include "cnn_test.h"
 #include "mtcnn_test_data.h"
+#include "cnn.h"
 
 void MTCNNTest_GenerateBoundingBox0(){
 
@@ -148,5 +149,19 @@ void MTCNNTest_Pad0(){
     for (size_t i=0;i<24;++i){
         printf("Output [%d]: %d\n", i, output[i]);
         assert(output[i] == expectedOutput[i]);
+    }
+}
+
+void MTCNNTest_DetectFace4(){
+    size_t maxBoxesCount = 5;
+    float output[5*maxBoxesCount];
+    uint8_t scaledInput[60*80*3];
+    CNN_AdaptiveAveragePool_Uint8_Uint8(3, 120, 160, 60, 80, detectFaceInput4, scaledInput);
+    int faces = MTCNN_DetectFace(3, 60, 80, scaledInput, output);
+    assert(faces == 1);
+    float expectedOutput[] = {26.566429, 10.839249, 63.781918, 48.054737, 0.991460};
+    for (size_t i=0;i<faces*5;++i){
+        printf("Output [%d]: %f\n", i, output[i]);
+        assert(equalFloatDefault(output[i], expectedOutput[i]));
     }
 }

@@ -12,6 +12,7 @@ void MTCNNTest_DetectFace0();
 void MTCNNTest_DetectFace1();
 void MTCNNTest_DetectFace2();
 void MTCNNTest_DetectFace3();
+void MTCNNTest_DetectFace4();
 void MTCNNTest_BoxNms0();
 void MTCNNTest_BoxNms1();
 void MTCNNTest_BoxNms2();
@@ -19,5 +20,4 @@ void MTCNNTest_BoxNms3();
 void MTCNNTest_BoxNms4();
 void MTCNNTest_Rerec0();
 void MTCNNTest_Pad0();
-
 #endif //CNN_MTCNN_TEST_H

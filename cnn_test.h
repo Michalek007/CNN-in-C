@@ -61,5 +61,6 @@ void CNNTest_AdaptiveAveragePool0();
 void CNNTest_AdaptiveAveragePool1();
 void CNNTest_AdaptiveAveragePool2();
 void CNNTest_AdaptiveAveragePool3();
+void CNNTest_AdaptiveAveragePool4();
 
 #endif //CNN_CNN_TEST_H

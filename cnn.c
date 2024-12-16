@@ -487,3 +487,27 @@ void CNN_AdaptiveAveragePool_Uint8(size_t inputChannels, size_t inputHeight, siz
         }
     }
 }
+
+void CNN_AdaptiveAveragePool_Uint8_Uint8(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, uint8_t* output){
+    for (size_t o=0;o<inputChannels;++o){
+        for (size_t i=0;i<outputHeight;i++){
+            for (size_t j=0;j<outputWidth;j++){
+                float sum = 0;
+                int startIndexH = i * inputHeight/outputHeight;
+                int startIndexW = j * inputWidth/outputWidth;
+                int endIndexH = ceilf((i+1) * inputHeight/(float)outputHeight);
+                int endIndexW = ceilf((j+1) * inputWidth/(float)outputWidth);
+                size_t kernelHeight = endIndexH - startIndexH;
+                size_t kernelWidth = endIndexW - startIndexW;
+                for (size_t k=0;k<kernelHeight;k++){
+                    for (size_t l=0;l<kernelWidth;l++){
+                        int inputIndex = o*inputHeight*inputWidth + (startIndexH+k)*inputWidth + startIndexW + l;
+                        sum += input[inputIndex];
+                    }
+                }
+                int outputIndex = o*outputHeight*outputWidth+i*outputWidth + j;
+                output[outputIndex] = (int)roundf(sum / (kernelHeight * kernelWidth));
+            }
+        }
+    }
+}

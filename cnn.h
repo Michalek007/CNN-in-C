@@ -44,4 +44,7 @@ void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t in
 
 void CNN_AdaptiveAveragePool_Uint8(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, float* output);
 
+void CNN_AdaptiveAveragePool_Uint8_Uint8(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, uint8_t* output);
+
+
 #endif //CNN_CNN_H

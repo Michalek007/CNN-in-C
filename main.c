@@ -28,10 +28,11 @@ int main() {
 //    MTCNNTest_BoxNms4();
 //    MTCNNTest_Rerec0();
 //    MTCNNTest_Pad0();
-    MTCNNTest_DetectFace0();
-    MTCNNTest_DetectFace1();
-    MTCNNTest_DetectFace2();
-    MTCNNTest_DetectFace3();
+//    MTCNNTest_DetectFace0();
+//    MTCNNTest_DetectFace1();
+//    MTCNNTest_DetectFace2();
+//    MTCNNTest_DetectFace3();
+    MTCNNTest_DetectFace4();
     return 0;
 
     CNNTest_FcLayer0();
@@ -83,6 +84,7 @@ int main() {
     CNNTest_AdaptiveAveragePool1();
     CNNTest_AdaptiveAveragePool2();
     CNNTest_AdaptiveAveragePool3();
+    CNNTest_AdaptiveAveragePool4();
 
 
     CNNTest_FashionMnist();
