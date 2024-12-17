@@ -54,4 +54,6 @@ void CNN_AveragePool_Basic(size_t inputChannels, size_t inputHeight, size_t inpu
 
 void CNN_LeakyReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float weight);
 
+void CNN_BatchNorm(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float* weights, const float* biases, const float* means, const float* variances);
+
 #endif //CNN_CNN_H

@@ -87,7 +87,7 @@ int main() {
     CNNTest_AdaptiveAveragePool4();
     CNNTest_AveragePoolBasic0();
     CNNTest_LeakyReLU0();
-
+    CNNTest_BatchNorm0();
 
     CNNTest_FashionMnist();
     CNNTest_FashionMnist1();

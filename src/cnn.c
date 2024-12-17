@@ -603,3 +603,14 @@ void CNN_LeakyReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, 
         }
     }
 }
+
+void CNN_BatchNorm(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float* weights, const float* biases, const float* means, const float* variances){
+    for (size_t o=0;o<inputChannels;++o){
+        for (size_t i=0;i<inputHeight;++i){
+            for (size_t j=0;j<inputWidth;++j){
+                size_t index = o*inputHeight*inputWidth + i*inputWidth + j;
+                input[index] = (input[index] - means[o]) / sqrtf(variances[o]+1e-05f) * weights[o] + biases[o];
+            }
+        }
+    }
+}
