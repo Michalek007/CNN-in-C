@@ -42,9 +42,14 @@ int CNN_BoxNmsIdx(size_t boxesLen, const float* boxes, const float* scores, floa
 
 void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const float* input, float* output);
 
-void CNN_AdaptiveAveragePool_Uint8(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, float* output);
+void CNN_AdaptiveAveragePool_Uint8_Float(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, float* output);
 
 void CNN_AdaptiveAveragePool_Uint8_Uint8(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, uint8_t* output);
 
+void CNN_AveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, int ceilMode, const float* input, float* output);
+
+void CNN_AveragePool_Symmetric(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output);
+
+void CNN_AveragePool_Basic(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output);
 
 #endif //CNN_CNN_H

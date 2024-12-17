@@ -82,13 +82,11 @@ void CNN_ConvLayer(size_t inputChannels, size_t inputHeight, size_t inputWidth, 
 
 void CNN_ConvLayer_Symmetric(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernelHeight, size_t kernelWidth,
                              int stride, int padding, const float* input, const float* weights, const float* biases, float* output){
-    CNN_ConvLayer(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, stride,
-                  padding, padding, input, weights, biases, output);
+    CNN_ConvLayer(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, stride, padding, padding, input, weights, biases, output);
 }
 
 void CNN_ConvLayer_Basic(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernel, const float* input, const float* weights, const float* biases, float* output){
-    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernel, kernel, 1, 0, input,
-                            weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernel, kernel, 1, 0, input, weights, biases, output);
 }
 
 void CNN_ReLU(size_t inputLen, float* input){
@@ -174,8 +172,7 @@ void CNN_MaxPool(size_t inputChannels, size_t inputHeight, size_t inputWidth, si
 }
 
 void CNN_MaxPool_Symmetric(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output){
-    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, stride, padding, padding, 0,
-                input, output);
+    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, stride, padding, padding, 0, input, output);
 }
 
 void CNN_MaxPool_Basic(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output){
@@ -466,7 +463,7 @@ void CNN_AdaptiveAveragePool(size_t inputChannels, size_t inputHeight, size_t in
     }
 }
 
-void CNN_AdaptiveAveragePool_Uint8(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, float* output){
+void CNN_AdaptiveAveragePool_Uint8_Float(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputHeight, size_t outputWidth, const uint8_t * input, float* output){
 
     for (size_t o=0;o<inputChannels;++o){
         for (size_t i=0;i<outputHeight;i++){
@@ -513,4 +510,84 @@ void CNN_AdaptiveAveragePool_Uint8_Uint8(size_t inputChannels, size_t inputHeigh
             }
         }
     }
+}
+
+void CNN_AveragePool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, int ceilMode, const float* input, float* output){
+    size_t outputHeight, outputWidth;
+    if (ceilMode){
+        outputHeight = ceilf((inputHeight-kernelHeight+2*paddingH)/(float)strideH+1);
+        outputWidth = ceilf((inputWidth-kernelWidth+2*paddingW)/(float)strideW+1);
+    }
+    else{
+        outputHeight = (inputHeight-kernelHeight+2*paddingH)/strideH+1;
+        outputWidth = (inputWidth-kernelWidth+2*paddingW)/strideW+1;
+    }
+    assert(outputHeight>0);
+    assert(outputWidth>0);
+
+    int paddingRight = 0;
+    int paddingBottom = 0;
+    if (ceilMode){
+        paddingRight = (outputWidth-1)*strideW + kernelWidth - inputWidth;
+        paddingBottom = (outputHeight-1)*strideH + kernelHeight - inputHeight;
+    }
+
+    int hasPadding = 0;
+    int paddingTop, paddingLeft;
+    size_t oldHeight, oldWidth;
+    if (paddingH != 0 || paddingW != 0 || paddingRight !=0 || paddingBottom != 0){
+        oldHeight = inputHeight;
+        oldWidth = inputWidth;
+        int newHeight = inputHeight+2*paddingH + paddingBottom;
+        int newWidth = inputWidth+2*paddingW + paddingRight;
+        hasPadding = 1;
+        inputHeight = newHeight;
+        inputWidth = newWidth;
+
+        paddingTop = paddingH;
+        paddingLeft = paddingW;
+        paddingRight += paddingW;
+        paddingBottom += paddingH;
+    }
+
+    for (size_t o=0;o<inputChannels;++o){
+        for (size_t i=0;i<outputHeight;i++){
+            for (size_t j=0;j<outputWidth;j++){
+                float sum = 0;
+                for (size_t k=0;k<kernelHeight;k++){
+                    for (size_t l=0;l<kernelWidth;l++){
+                        int inputIndex = o*inputHeight*inputWidth + (i*strideH+k)*inputWidth + j*strideW + l;
+                        float targetValue;
+                        if (hasPadding){
+                            inputIndex -= o*inputHeight*inputWidth;
+                            size_t row = inputIndex / inputWidth;
+                            size_t column = inputIndex % inputWidth;
+                            if (row < paddingTop || row >= inputHeight - paddingBottom || column < paddingLeft || column >= inputWidth - paddingRight){
+                                targetValue = 0;
+                            }
+                            else{
+                                inputIndex = inputIndex - inputWidth*row - paddingLeft + oldWidth*(row-paddingTop); // last=> oldWidth*oldInputRow
+                                inputIndex += o*oldHeight*oldWidth;
+                                targetValue = input[inputIndex];
+                            }
+                        }
+                        else{
+                            targetValue = input[inputIndex];
+                        }
+                        sum += targetValue;
+                    }
+                }
+                int outputIndex = o*outputHeight*outputWidth+i*outputWidth + j;
+                output[outputIndex] = sum / (kernelHeight * kernelWidth);
+            }
+        }
+    }
+}
+
+void CNN_AveragePool_Symmetric(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output){
+    CNN_AveragePool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, stride, padding, padding, 0, input, output);
+}
+
+void CNN_AveragePool_Basic(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output){
+    CNN_AveragePool_Symmetric(inputChannels, inputHeight, inputWidth, kernel, kernel, (int) kernel, 0, input, output);
 }

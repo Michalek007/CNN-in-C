@@ -45,7 +45,7 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
         size_t outputHeight = inputHeight*scales[i]+1;
         size_t outputWidth = inputWidth*scales[i]+1;
         float scaledOutput[inputChannels*outputHeight*outputWidth];
-        CNN_AdaptiveAveragePool_Uint8(inputChannels, inputHeight, inputWidth, outputHeight, outputWidth, input, scaledOutput);
+        CNN_AdaptiveAveragePool_Uint8_Float(inputChannels, inputHeight, inputWidth, outputHeight, outputWidth, input, scaledOutput);
 //        if (i == 0){
 //            for (size_t j=0;j<11163;++j){
 //                printf("Output [%d]: %f\n", j, scaledOutput[j]);
@@ -212,7 +212,7 @@ int MTCNN_DetectFace(size_t inputChannels, size_t inputHeight, size_t inputWidth
 //            }
 //        }
         float scaledInput[inputChannels*24*24];
-        CNN_AdaptiveAveragePool_Uint8(inputChannels, newHeight, newWidth, 24, 24, newInput, scaledInput);
+        CNN_AdaptiveAveragePool_Uint8_Float(inputChannels, newHeight, newWidth, 24, 24, newInput, scaledInput);
 //        if (i/4 == 1){
 //            for (size_t k=0;k<1728;++k){
 //                printf("Output [%d]: %f\n", k, scaledInput[k]);
