@@ -184,10 +184,9 @@ void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, floa
         for (size_t i=0;i<inputHeight;++i){
             for (size_t j=0;j<inputWidth;++j){
                 size_t index = o*inputHeight*inputWidth + i*inputWidth + j;
-                float a = 1;
-                if (input[index] < 0)
-                    a = weights[o];
-                input[index] = a * input[index];
+                if (input[index] < 0){
+                    input[index] = weights[o] * input[index];
+                }
             }
         }
     }
@@ -590,4 +589,17 @@ void CNN_AveragePool_Symmetric(size_t inputChannels, size_t inputHeight, size_t 
 
 void CNN_AveragePool_Basic(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output){
     CNN_AveragePool_Symmetric(inputChannels, inputHeight, inputWidth, kernel, kernel, (int) kernel, 0, input, output);
+}
+
+void CNN_LeakyReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float weight){
+    for (size_t o=0;o<inputChannels;++o){
+        for (size_t i=0;i<inputHeight;++i){
+            for (size_t j=0;j<inputWidth;++j){
+                size_t index = o*inputHeight*inputWidth + i*inputWidth + j;
+                if (input[index] < 0){
+                    input[index] = weight * input[index];
+                }
+            }
+        }
+    }
 }

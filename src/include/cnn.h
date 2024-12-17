@@ -52,4 +52,6 @@ void CNN_AveragePool_Symmetric(size_t inputChannels, size_t inputHeight, size_t 
 
 void CNN_AveragePool_Basic(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output);
 
+void CNN_LeakyReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float weight);
+
 #endif //CNN_CNN_H
