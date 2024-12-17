@@ -34,7 +34,7 @@ void CNNTest_FcLayer0(){
     float biases[] = {0.0011, -0.3997};
 
     float output[outputLen];
-    CNN_FcLayerForward(inputLen, outputLen, input, weights, biases, output);
+    CNN_FcLayer(inputLen, outputLen, input, weights, biases, output);
 
     float expectedOutput[] = {-0.0684, -1.6795};
 
@@ -53,7 +53,7 @@ void CNNTest_FcLayer1(){
     float biases[] = {-0.2834208309650421, -0.209992915391922, 0.11198967695236206, 0.006838679313659668, 0.05985492467880249, -0.03515517711639404, 0.1877993941307068, 0.26682329177856445};
     float expectedOutput[] = {0.7860946655273438, 0.13487300276756287, -0.7200698256492615, 2.5249881744384766, -0.8420420289039612, 1.0255547761917114, 0.24522829055786133, -1.2462044954299927};
     float output[outputLen];
-    CNN_FcLayerForward(inputLen, outputLen, input, weights, biases, output);
+    CNN_FcLayer(inputLen, outputLen, input, weights, biases, output);
 
     for (size_t i=0;i<outputLen;++i){
         printf("Output: %f\n", output[i]);
@@ -102,7 +102,7 @@ void CNNTest_ConvDev(){
     }
 }
 
-void CNNTest_Conv1(){
+void CNNTest_ConvSymmetric1(){
     size_t inputChannels = 1;
     size_t inputHeight = 2;
     size_t inputWidth = 2;
@@ -117,14 +117,15 @@ void CNNTest_Conv1(){
     float biases[] = {-0.07219243049621582, 0.49940162897109985};
     float expectedOutput[] = {-1.4588948488235474, -0.8456935286521912};
     float output[2];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     for (size_t i=0;i<2;++i){
         printf("Output: %f\n", output[i]);
         assert(equalFloatDefault(output[i], expectedOutput[i]));
     }
 }
 
-void CNNTest_Conv0(){
+void CNNTest_ConvSymmetric0(){
     size_t inputChannels = 1;
     size_t inputHeight = 2;
     size_t inputWidth = 2;
@@ -137,7 +138,8 @@ void CNNTest_Conv0(){
     float biases[] = {0.4796, 0.1459};
     float output [2];
 
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, 0, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            0, input, weights, biases, output);
 
     float expectedOutput[] = {2.0088, 1.0974};
     for (size_t i=0;i<2;++i){
@@ -146,7 +148,7 @@ void CNNTest_Conv0(){
     }
 }
 
-void CNNTest_Conv2(){
+void CNNTest_ConvSymmetric2(){
     size_t inputChannels = 3;
     size_t inputHeight = 2;
     size_t inputWidth = 2;
@@ -161,14 +163,15 @@ void CNNTest_Conv2(){
     float biases[] = {-0.27182209491729736, 0.24688738584518433};
     float expectedOutput[] = {-0.4452054500579834, 1.858389139175415};
     float output[2];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     for (size_t i=0;i<2;++i){
         printf("Output: %f\n", output[i]);
         assert(equalFloatDefault(output[i], expectedOutput[i]));
     }
 }
 
-void CNNTest_Conv3(){
+void CNNTest_ConvSymmetric3(){
     size_t inputChannels = 3;
     size_t inputHeight = 2;
     size_t inputWidth = 2;
@@ -183,7 +186,8 @@ void CNNTest_Conv3(){
     float biases[] = {-0.28312644362449646, 0.25910741090774536};
     float expectedOutput[] = {-1.5233550071716309, -1.5233550071716309, -0.905842125415802, -0.905842125415802};
     float output[4];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     for (size_t i=0;i<4;++i){
         printf("Output: %f\n", output[i]);
         assert(equalFloatDefault(output[i], expectedOutput[i]));
@@ -202,7 +206,7 @@ void CNNTest_ReLU(){
 }
 
 
-void CNNTest_MaxPoolDefault0(){
+void CNNTest_MaxPoolBasic0(){
     size_t inputChannels = 3;
     size_t inputHeight = 2;
     size_t inputWidth = 2;
@@ -211,14 +215,14 @@ void CNNTest_MaxPoolDefault0(){
     float input[] = {1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0};
     float expectedOutput[] = {2.0, 2.0, 2.0};
     float output[3];
-    CNN_MaxPoolForwardDefault(inputChannels, inputHeight, inputWidth, kernel, input, output);
+    CNN_MaxPool_Basic(inputChannels, inputHeight, inputWidth, kernel, input, output);
     for (size_t i=0;i<3;++i){
         printf("Output: %f\n", output[i]);
         assert(equalFloatDefault(output[i], expectedOutput[i]));
     }
 }
 
-void CNNTest_MaxPoolDefault1(){
+void CNNTest_MaxPoolBasic1(){
     size_t inputChannels = 3;
     size_t inputHeight = 8;
     size_t inputWidth = 8;
@@ -227,14 +231,14 @@ void CNNTest_MaxPoolDefault1(){
     float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
     float expectedOutput[] = {2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0};
     float output[48];
-    CNN_MaxPoolForwardDefault(inputChannels, inputHeight, inputWidth, kernel, input, output);
+    CNN_MaxPool_Basic(inputChannels, inputHeight, inputWidth, kernel, input, output);
     for (size_t i=0;i<48;++i){
         printf("Output: %f\n", output[i]);
         assert(equalFloatDefault(output[i], expectedOutput[i]));
     }
 }
 
-void CNNTest_MaxPoolDefault2(){
+void CNNTest_MaxPoolBasic2(){
     size_t inputChannels = 3;
     size_t inputHeight = 4;
     size_t inputWidth = 4;
@@ -243,7 +247,7 @@ void CNNTest_MaxPoolDefault2(){
     float input[] = {1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0};
     float expectedOutput[] = {2.0, 4.0, 2.0, 4.0, 2.0, 4.0, 2.0, 4.0, 2.0, 4.0, 2.0, 4.0};
     float output[12];
-    CNN_MaxPoolForwardDefault(inputChannels, inputHeight, inputWidth, kernel, input, output);
+    CNN_MaxPool_Basic(inputChannels, inputHeight, inputWidth, kernel, input, output);
     for (size_t i=0;i<12;++i){
         printf("Output: %f\n", output[i]);
         assert(equalFloatDefault(output[i], expectedOutput[i]));
@@ -259,7 +263,7 @@ void CNNTest_FcLayer2(){
     float weights[] = {0.16995835304260254, 0.22600078582763672, -0.2761087715625763, 0.011386513710021973, 0.13254234194755554, 0.16293412446975708, 0.08361351490020752, 0.20071491599082947, -0.1406496912240982, 0.04577279090881348, -0.2568320035934448, 0.04784095287322998, 0.2762386202812195, -0.11048518121242523, 0.06250417232513428, -0.0355963408946991, -0.22164452075958252, 0.14045783877372742, 0.06824713945388794, 0.13067972660064697, -0.2109280377626419, 0.23961293697357178, -0.0003300905227661133, 0.01168668270111084, 0.05759236216545105, 0.21103209257125854, -0.12336787581443787, 0.23207396268844604, -0.06109607219696045, -0.03237155079841614, -0.15839816629886627, -0.10125082731246948, -0.22038260102272034, 0.12531322240829468, 0.04893115162849426, -0.19492703676223755, -0.08529552817344666, -0.15485630929470062, -0.04665389657020569, -0.05766923725605011, -0.21354517340660095, -0.14076727628707886, 0.02796277403831482, -0.20059585571289062, -0.056377217173576355, 0.0911872386932373, -0.16691803932189941, -0.2764800786972046, 0.19043493270874023, -0.11486083269119263, 0.0975867211818695, -0.27269139885902405, -0.25550931692123413, -0.048815011978149414, -0.27739012241363525, 0.21343660354614258, -0.055867865681648254, 0.0758342444896698, -0.06157584488391876, 0.01748308539390564, -0.2159612774848938, 0.16303667426109314, 0.04684939980506897, 0.20647725462913513, 0.228692889213562, -0.1310933381319046, -0.08482837677001953, -0.08939646184444427, 0.0715867280960083, -0.044201016426086426, 0.06360968947410583, -0.15363213419914246, -0.15858615934848785, 0.11814367771148682, -0.006249725818634033, 0.22657793760299683, -0.15646637976169586, 0.27895408868789673, -0.21727895736694336, -0.074283167719841, -0.17173147201538086, 0.03363567590713501, -0.020136088132858276, -0.0446343719959259, 0.14371776580810547, -0.2637174427509308, -0.2169295847415924, -0.2063857614994049, 0.2197251319885254, 0.25254297256469727, 0.019192367792129517, 0.030066192150115967, -0.19475431740283966, 0.024700284004211426, -0.2228032648563385, 0.04736357927322388};
     float biases[] = {0.2728763818740845, 0.03939947485923767, 0.20954760909080505, -0.25628429651260376, -0.10322943329811096, -0.2817813456058502, -0.06255148351192474, 0.09646877646446228};
     float output[outputLen];
-    CNN_FcLayerForward(inputLen, outputLen, input, weights, biases, output);
+    CNN_FcLayer(inputLen, outputLen, input, weights, biases, output);
     float expectedOutput[] = {1.3747004270553589, 0.7661980390548706, 0.23256614804267883, -2.2754743099212646, -0.7247775793075562, -0.2694503366947174, 0.28378742933273315, -0.3862434923648834};
     for (size_t i=0;i<8;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -267,7 +271,7 @@ void CNNTest_FcLayer2(){
     }
 }
 
-void CNNTest_Conv4(){
+void CNNTest_ConvSymmetric4(){
     size_t inputChannels = 3;
     size_t inputHeight = 2;
     size_t inputWidth = 2;
@@ -281,7 +285,8 @@ void CNNTest_Conv4(){
     float weights[] = {0.018087685108184814, -0.2867906987667084, 0.14836326241493225, 0.1404966115951538, -0.08155675232410431, -0.09423647820949554, 0.09665343165397644, 0.1414070725440979, -0.017324596643447876, -0.14090172946453094, -0.002656877040863037, 0.27652156352996826, -0.2712455093860626, -0.19380900263786316, -0.17967677116394043, 0.04609683156013489, -0.18530984222888947, -0.25858041644096375, 0.2721595764160156, 0.060583293437957764, -0.12617437541484833, 0.25797683000564575, 0.011320412158966064, 0.22692596912384033};
     float biases[] = {0.050495415925979614, 0.1718587577342987};
     float output[2];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     float expectedOutput[] = {0.28505435585975647, -0.0286807119846344};
     for (size_t i=0;i<2;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -289,7 +294,7 @@ void CNNTest_Conv4(){
     }
 }
 
-void CNNTest_MaxPoolDefault3(){
+void CNNTest_MaxPoolBasic3(){
     size_t inputChannels = 3;
     size_t inputHeight = 8;
     size_t inputWidth = 8;
@@ -297,7 +302,7 @@ void CNNTest_MaxPoolDefault3(){
 
     float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
     float output[48];
-    CNN_MaxPoolForwardDefault(inputChannels, inputHeight, inputWidth, kernel, input, output);
+    CNN_MaxPool_Basic(inputChannels, inputHeight, inputWidth, kernel, input, output);
     float expectedOutput[] = {2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0};
     for (size_t i=0;i<48;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -305,7 +310,7 @@ void CNNTest_MaxPoolDefault3(){
     }
 }
 
-void CNNTest_Conv5(){
+void CNNTest_ConvSymmetric5(){
     size_t inputChannels = 3;
     size_t inputHeight = 2;
     size_t inputWidth = 2;
@@ -319,7 +324,8 @@ void CNNTest_Conv5(){
     float weights[] = {0.11188864707946777, -0.19589996337890625, 0.37177562713623047, -0.3102363348007202, 0.2910904884338379, 0.33867979049682617, -0.25160396099090576, 0.35944443941116333, -0.32669776678085327, 0.2901209592819214, -0.22926484048366547, -0.19617070257663727};
     float biases[] = {0.1990358829498291, 0.337726891040802};
     float output[4];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     float expectedOutput[] = {0.8063341379165649, 1.4136323928833008, -0.01644498109817505, -0.3706168532371521};
     for (size_t i=0;i<4;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -327,7 +333,7 @@ void CNNTest_Conv5(){
     }
 }
 
-void CNNTest_Conv6(){
+void CNNTest_ConvSymmetric6(){
     size_t inputChannels = 1;
     size_t inputHeight = 2;
     size_t inputWidth = 6;
@@ -341,7 +347,8 @@ void CNNTest_Conv6(){
     float weights[] = {-0.22702014446258545, -0.13850849866867065, -0.09126222133636475, 0.20569247007369995, 0.11927437782287598, 0.44718605279922485, 0.35928070545196533, -0.4848597049713135};
     float biases[] = {0.08726513385772705, 0.020229637622833252};
     float output[6];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     float expectedOutput[] = {-0.09664928913116455, -0.5988460779190063, -1.1010428667068481, 0.4234374165534973, 1.3052003383636475, 2.1869633197784424};
     for (size_t i=0;i<6;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -349,7 +356,7 @@ void CNNTest_Conv6(){
     }
 }
 
-void CNNTest_Conv7(){
+void CNNTest_ConvSymmetric7(){
     size_t inputChannels = 3;
     size_t inputHeight = 2;
     size_t inputWidth = 2;
@@ -363,7 +370,8 @@ void CNNTest_Conv7(){
     float weights[] = {-0.1318436861038208, 0.1463903784751892, -0.2260064333677292, 0.16108381748199463, 0.14485830068588257, 0.06885740160942078, -0.22957946360111237, -0.07165250182151794, 0.3125830888748169, 0.3781844973564148, 0.23648786544799805, 0.25071847438812256};
     float biases[] = {0.07167991995811462, 0.09044229984283447};
     float output[4];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     float expectedOutput[] = {0.6113512516021729, 0.6113512516021729, 1.5244348049163818, 1.5244348049163818};
     for (size_t i=0;i<4;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -371,7 +379,7 @@ void CNNTest_Conv7(){
     }
 }
 
-void CNNTest_Conv8(){
+void CNNTest_ConvSymmetric8(){
     size_t inputChannels = 1;
     size_t inputWidth = 6;
     size_t inputHeight = 2;
@@ -385,7 +393,8 @@ void CNNTest_Conv8(){
     float weights[] = {-0.3524589538574219, 0.08577579259872437, 0.014021694660186768, -0.19818466901779175, 0.17860078811645508, 0.30151426792144775, -0.03831219673156738, 0.21769064664840698};
     float biases[] = {0.04682958126068115, 0.4851817488670349};
     float output[6];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     float expectedOutput[] = {-0.5164254307746887, -1.418117642402649, -2.319809913635254, 1.6638801097869873, 2.9828672409057617, 4.301854133605957};
     for (size_t i=0;i<6;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -393,7 +402,7 @@ void CNNTest_Conv8(){
     }
 }
 
-void CNNTest_MaxPool0(){
+void CNNTest_MaxPoolSymmetric0(){
     size_t inputChannels = 1;
     size_t inputHeight = 2;
     size_t inputWidth = 6;
@@ -404,7 +413,8 @@ void CNNTest_MaxPool0(){
 
     float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     float output[2];
-    CNN_MaxPoolForward(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, padding, input, output);
+    CNN_MaxPool_Symmetric(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, padding, input,
+                          output);
     float expectedOutput[] = {4.0, 6.0};
     for (size_t i=0;i<2;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -412,7 +422,7 @@ void CNNTest_MaxPool0(){
     }
 }
 
-void CNNTest_Conv9(){
+void CNNTest_ConvSymmetric9(){
     size_t inputChannels = 1;
     size_t inputHeight = 2;
     size_t inputWidth = 6;
@@ -426,7 +436,8 @@ void CNNTest_Conv9(){
     float weights[] = {0.07620233297348022, -0.32052844762802124, 0.39662057161331177, 0.36064183712005615, 0.012325644493103027, -0.4210308790206909, 0.0388561487197876, -0.24088072776794434};
     float biases[] = {0.0025184154510498047, 0.15941154956817627};
     float output[16];
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, padding, input, weights, biases, output);
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride,
+                            padding, input, weights, biases, output);
     float expectedOutput[] = {0.36316025257110596, 1.8776850700378418, 3.392209768295288, 2.38224196434021, -0.31801003217697144, -0.8066622614860535, -1.2953145503997803, 0.45973241329193115, -0.08146917819976807, -0.48551833629608154, -0.889567494392395, 0.39254844188690186, -0.26161932945251465, -1.0790297985076904, -1.8964403867721558, 0.23336541652679443};
     for (size_t i=0;i<16;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -434,7 +445,7 @@ void CNNTest_Conv9(){
     }
 }
 
-void CNNTest_MaxPool1(){
+void CNNTest_MaxPoolSymmetric1(){
     size_t inputChannels = 1;
     size_t inputHeight = 2;
     size_t inputWidth = 6;
@@ -445,7 +456,8 @@ void CNNTest_MaxPool1(){
 
     float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     float output[6];
-    CNN_MaxPoolForward(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, padding, input, output);
+    CNN_MaxPool_Symmetric(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, padding, input,
+                          output);
     float expectedOutput[] = {3.0, 5.0, 6.0, 3.0, 5.0, 6.0};
     for (size_t i=0;i<6;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -453,7 +465,7 @@ void CNNTest_MaxPool1(){
     }
 }
 
-void CNNTest_Conv_0(){
+void CNNTest_Conv0(){
     size_t inputChannels = 1;
     size_t inputHeight = 4;
     size_t inputWidth = 6;
@@ -469,7 +481,8 @@ void CNNTest_Conv_0(){
     float weights[] = {-0.2773746848106384, -0.38028454780578613, -0.321181058883667, 0.012752652168273926, 0.1606420874595642, -0.32405877113342285, 0.16822177171707153, 0.49534308910369873};
     float biases[] = {0.13865447044372559, -0.4579687714576721};
     float output[18];
-    CNN_ConvLayerForward_(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, input, weights, biases, output);
+    CNN_ConvLayer(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, strideH, strideW,
+                  paddingH, paddingW, input, weights, biases, output);
     float expectedOutput[] = {-1.194965124130249, -3.1271402835845947, -5.0593156814575195, -1.194965124130249, -3.1271402835845947, -5.0593156814575195, -1.194965124130249, -3.1271402835845947, -5.0593156814575195, 0.21346372365951538, 1.2137601375579834, 2.2140564918518066, 0.21346372365951538, 1.2137601375579834, 2.2140564918518066, 0.21346372365951538, 1.2137601375579834, 2.2140564918518066};
     for (size_t i=0;i<18;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -477,7 +490,7 @@ void CNNTest_Conv_0(){
     }
 }
 
-void CNNTest_Conv_1(){
+void CNNTest_Conv1(){
     size_t inputChannels = 1;
     size_t inputHeight = 2;
     size_t inputWidth = 6;
@@ -493,7 +506,8 @@ void CNNTest_Conv_1(){
     float weights[] = {-0.16223478317260742, -0.4977887272834778, 0.15677815675735474, 0.28064829111099243, 0.010788321495056152, -0.438529372215271, -0.30910801887512207, -0.3300057053565979};
     float biases[] = {-0.1693311333656311, 0.3180118203163147};
     float output[8];
-    CNN_ConvLayerForward_(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, input, weights, biases, output);
+    CNN_ConvLayer(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, strideH, strideW,
+                  paddingH, paddingW, input, weights, biases, output);
     float expectedOutput[] = {-0.38647156953811646, -0.8316657543182373, -1.2768597602844238, -0.20207089185714722, -0.4505232572555542, -2.584232807159424, -4.717942714691162, -1.4719064235687256};
     for (size_t i=0;i<8;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -501,7 +515,7 @@ void CNNTest_Conv_1(){
     }
 }
 
-void CNNTest_MaxPool_0(){
+void CNNTest_MaxPool0(){
     size_t inputChannels = 1;
     size_t inputHeight = 4;
     size_t inputWidth = 6;
@@ -514,7 +528,8 @@ void CNNTest_MaxPool_0(){
 
     float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     float output[9];
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, 0, input, output);
+    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW,
+                0, input, output);
     float expectedOutput[] = {2.0, 4.0, 6.0, 2.0, 4.0, 6.0, 2.0, 4.0, 6.0};
     for (size_t i=0;i<9;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -522,7 +537,7 @@ void CNNTest_MaxPool_0(){
     }
 }
 
-void CNNTest_MaxPool_1(){
+void CNNTest_MaxPool1(){
     size_t inputChannels = 1;
     size_t inputHeight = 2;
     size_t inputWidth = 6;
@@ -535,7 +550,8 @@ void CNNTest_MaxPool_1(){
 
     float input[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     float output[4];
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, 0, input, output);
+    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW,
+                0, input, output);
     float expectedOutput[] = {1.0, 3.0, 5.0, 6.0};
     for (size_t i=0;i<4;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -631,7 +647,7 @@ void CNNTest_Softmax2D2(){
     }
 }
 
-void CNNTest_MaxPool_2(){
+void CNNTest_MaxPool2(){
     size_t inputChannels = 1;
     size_t inputHeight = 3;
     size_t inputWidth = 3;
@@ -645,7 +661,8 @@ void CNNTest_MaxPool_2(){
 
     float input[] = {1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0};
     float output[4];
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, ceilMode, input, output);
+    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW,
+                ceilMode, input, output);
     float expectedOutput[] = {2.0, 3.0, 2.0, 3.0};
     for (size_t i=0;i<4;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -653,7 +670,7 @@ void CNNTest_MaxPool_2(){
     }
 }
 
-void CNNTest_MaxPool_3(){
+void CNNTest_MaxPool3(){
     size_t inputChannels = 1;
     size_t inputHeight = 3;
     size_t inputWidth = 3;
@@ -667,7 +684,8 @@ void CNNTest_MaxPool_3(){
 
     float input[] = {1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0};
     float output[4];
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, ceilMode, input, output);
+    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW,
+                ceilMode, input, output);
     float expectedOutput[] = {2.0, 3.0, 2.0, 3.0};
     for (size_t i=0;i<4;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -710,7 +728,7 @@ void CNNTest_Permute2() {
     }
 }
 
-void CNNTest_MaxPool_4(){
+void CNNTest_MaxPool4(){
     size_t inputChannels = 3;
     size_t inputHeight = 4;
     size_t inputWidth = 4;
@@ -724,7 +742,8 @@ void CNNTest_MaxPool_4(){
 
     float input[] = {0.8279, 0.46341, 0.86545, 0.31142, 0.442, 0.38217, 0.54107, 0.35201, 0.27011, 0.47176, 0.75628, 0.96981, 0.82802, 0.34199, 0.39609, 0.14755, 0.64577, 0.10953, 0.71928, 0.4916, 0.3771, 0.92085, 0.07856, 0.55631, 0.35691, 0.28381, 0.19412, 0.88892, 0.31917, 0.02888, 0.38675, 0.16355, 0.93754, 0.44301, 0.33697, 0.4609, 0.84714, 0.94242, 0.33881, 0.97944, 0.03135, 0.52389, 0.68186, 0.21903, 0.42654, 0.30936, 0.71028, 0.58921};
     float output[12];
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, ceilMode, input, output);
+    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW,
+                ceilMode, input, output);
     float expectedOutput[] = {0.86545, 0.96981, 0.82802, 0.96981, 0.92085, 0.88892, 0.38675, 0.88892, 0.94242, 0.97944, 0.71028, 0.71028};
     for (size_t i=0;i<12;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -733,7 +752,7 @@ void CNNTest_MaxPool_4(){
 
 }
 
-void CNNTest_MaxPool_5(){
+void CNNTest_MaxPool5(){
     size_t inputChannels = 3;
     size_t inputHeight = 4;
     size_t inputWidth = 4;
@@ -747,7 +766,8 @@ void CNNTest_MaxPool_5(){
 
     float input[] = {-0.69233, -0.2751, -0.72322, -0.41535, -0.65958, -0.42752, -0.27232, -0.72395, -0.09608, -0.21748, -0.62269, -0.27097, -0.26292, -0.53008, -0.49703, -0.54208, -0.76701, -0.64043, -0.95705, -0.58469, -0.98878, -0.69187, -0.38132, -0.87176, -0.1723, -0.83375, -0.42588, -0.61377, -0.52989, -0.11865, -0.77723, -0.22211, -0.21569, -0.91871, -0.25167, -0.01942, -0.06396, -0.42864, -0.68572, -0.76806, -0.52915, -0.39198, -0.89214, -0.04035, -0.0562, -0.69629, -0.96913, -0.64165};
     float output[12];
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, ceilMode, input, output);
+    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW,
+                ceilMode, input, output);
     float expectedOutput[] = {-0.09608, -0.27097, -0.09608, -0.27097, -0.1723, -0.38132, -0.11865, -0.22211, -0.06396, -0.01942, -0.0562, -0.04035};
     for (size_t i=0;i<12;++i){
         printf("Output [%d]: %f\n", i, output[i]);
@@ -756,7 +776,7 @@ void CNNTest_MaxPool_5(){
 
 }
 
-void CNNTest_Conv_2(){
+void CNNTest_Conv2(){
     size_t inputChannels = 3;
     size_t inputHeight = 4;
     size_t inputWidth = 4;
@@ -772,7 +792,8 @@ void CNNTest_Conv_2(){
     float weights[] = {-0.02948, -0.09451, -0.2712, -0.15057, -0.00987, 0.22768, 0.2647, 0.26478, -0.15144, 0.25326, 0.20254, 0.15778, -0.10105, 0.25119, 0.01189, -0.24489, -0.04929, 0.23522, -0.15514, 0.18225, -0.02301, 0.21118, 0.17979, -0.27069};
     float biases[] = {-0.21425, 0.28474};
     float output[32];
-    CNN_ConvLayerForward_(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, strideH, strideW, paddingH, paddingW, input, weights, biases, output);
+    CNN_ConvLayer(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, strideH, strideW,
+                  paddingH, paddingW, input, weights, biases, output);
     float expectedOutput[] = {-0.21425, -0.21425, -0.21425, -0.21425, -0.21425, 0.20161, 0.15341, -0.21425, -0.21425, -0.20206, 0.33895, -0.21425, -0.21425, -0.21425, -0.21425, -0.21425, 0.28474, 0.28474, 0.28474, 0.28474, 0.28474, 0.53523, 0.21905, 0.28474, 0.28474, -0.03011, 0.50501, 0.28474, 0.28474, 0.28474, 0.28474, 0.28474};
     for (size_t i=0;i<32;++i){
         printf("Output [%d]: %f\n", i, output[i]);

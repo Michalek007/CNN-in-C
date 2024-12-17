@@ -8,7 +8,7 @@
 #include <float.h>
 #include "cnn.h"
 
-void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, const float* weights, const float* biases, float* output){
+void CNN_FcLayer(size_t inputLen, size_t outputLen, const float* input, const float* weights, const float* biases, float* output){
    for (size_t i=0;i<outputLen;++i){
        float outputValue = 0;
        for (size_t j=0;j<inputLen;++j){
@@ -18,7 +18,7 @@ void CNN_FcLayerForward(size_t inputLen, size_t outputLen, const float* input, c
    }
 }
 
-void CNN_ConvLayerForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, const float* input, const float* weights, const float* biases, float* output){
+void CNN_ConvLayer(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, const float* input, const float* weights, const float* biases, float* output){
     size_t outputHeight = (inputHeight-kernelHeight+2*paddingH)/strideH+1;
     size_t outputWidth = (inputWidth-kernelWidth+2*paddingW)/strideW+1;
     assert(outputHeight>0);
@@ -80,13 +80,15 @@ void CNN_ConvLayerForward_(size_t inputChannels, size_t inputHeight, size_t inpu
     }
 }
 
-void CNN_ConvLayerForward(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernelHeight, size_t kernelWidth,
-                          int stride, int padding, const float* input, const float* weights, const float* biases, float* output){
-    CNN_ConvLayerForward_(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, stride, padding, padding, input, weights, biases, output);
+void CNN_ConvLayer_Symmetric(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernelHeight, size_t kernelWidth,
+                             int stride, int padding, const float* input, const float* weights, const float* biases, float* output){
+    CNN_ConvLayer(inputChannels, inputHeight, inputWidth, outputChannels, kernelHeight, kernelWidth, stride, stride,
+                  padding, padding, input, weights, biases, output);
 }
 
-void CNN_ConvLayerForwardDefault(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernel, const float* input, const float* weights, const float* biases, float* output){
-    CNN_ConvLayerForward(inputChannels, inputHeight, inputWidth, outputChannels, kernel, kernel, 1, 0, input, weights, biases, output);
+void CNN_ConvLayer_Basic(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t outputChannels, size_t kernel, const float* input, const float* weights, const float* biases, float* output){
+    CNN_ConvLayer_Symmetric(inputChannels, inputHeight, inputWidth, outputChannels, kernel, kernel, 1, 0, input,
+                            weights, biases, output);
 }
 
 void CNN_ReLU(size_t inputLen, float* input){
@@ -97,7 +99,7 @@ void CNN_ReLU(size_t inputLen, float* input){
     }
 }
 
-void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, int ceilMode, const float* input, float* output){
+void CNN_MaxPool(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int strideH, int strideW, int paddingH, int paddingW, int ceilMode, const float* input, float* output){
     size_t outputHeight, outputWidth;
     if (ceilMode){
         outputHeight = ceilf((inputHeight-kernelHeight+2*paddingH)/(float)strideH+1);
@@ -171,12 +173,13 @@ void CNN_MaxPoolForward_(size_t inputChannels, size_t inputHeight, size_t inputW
     }
 }
 
-void CNN_MaxPoolForward(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output){
-    CNN_MaxPoolForward_(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, stride, padding, padding, 0, input, output);
+void CNN_MaxPool_Symmetric(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernelHeight, size_t kernelWidth, int stride, int padding, const float* input, float* output){
+    CNN_MaxPool(inputChannels, inputHeight, inputWidth, kernelHeight, kernelWidth, stride, stride, padding, padding, 0,
+                input, output);
 }
 
-void CNN_MaxPoolForwardDefault(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output){
-    CNN_MaxPoolForward(inputChannels, inputHeight, inputWidth, kernel, kernel, (int)kernel, 0, input, output);
+void CNN_MaxPool_Basic(size_t inputChannels, size_t inputHeight, size_t inputWidth, size_t kernel, const float* input, float* output){
+    CNN_MaxPool_Symmetric(inputChannels, inputHeight, inputWidth, kernel, kernel, (int) kernel, 0, input, output);
 }
 
 void CNN_PReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float* weights){
