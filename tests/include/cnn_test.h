@@ -65,5 +65,7 @@ void CNNTest_AdaptiveAveragePool4();
 void CNNTest_AveragePoolBasic0();
 void CNNTest_LeakyReLU0();
 void CNNTest_BatchNorm0();
+void CNNTest_Normalize0();
+void CNNTest_NormalizeLp0();
 
 #endif //CNN_CNN_TEST_H

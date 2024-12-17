@@ -56,4 +56,8 @@ void CNN_LeakyReLU(size_t inputChannels, size_t inputHeight, size_t inputWidth, 
 
 void CNN_BatchNorm(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float* weights, const float* biases, const float* means, const float* variances);
 
+void CNN_Normalize(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float* means, const float* stds);
+
+void CNN_NormalizeLp(size_t inputLen, float p, float* input);
+
 #endif //CNN_CNN_H

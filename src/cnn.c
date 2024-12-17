@@ -614,3 +614,25 @@ void CNN_BatchNorm(size_t inputChannels, size_t inputHeight, size_t inputWidth, 
         }
     }
 }
+
+void CNN_Normalize(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, const float* means, const float* stds){
+    for (size_t o=0;o<inputChannels;++o){
+        for (size_t i=0;i<inputHeight;++i){
+            for (size_t j=0;j<inputWidth;++j){
+                size_t index = o*inputHeight*inputWidth + i*inputWidth + j;
+                input[index] = (input[index] - means[o]) / stds[o];
+            }
+        }
+    }
+}
+
+void CNN_NormalizeLp(size_t inputLen, float p, float* input){
+    float lpNorm = 0;
+    for (size_t i=0;i<inputLen;++i){
+        lpNorm += powf(input[i], p);
+    }
+    lpNorm = fmaxf(powf(lpNorm, 1/p), 1e-12);
+    for (size_t i=0;i<inputLen;++i){
+        input[i] /= lpNorm;
+    }
+}

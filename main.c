@@ -88,6 +88,8 @@ int main() {
     CNNTest_AveragePoolBasic0();
     CNNTest_LeakyReLU0();
     CNNTest_BatchNorm0();
+    CNNTest_Normalize0();
+    CNNTest_NormalizeLp0();
 
     CNNTest_FashionMnist();
     CNNTest_FashionMnist1();
