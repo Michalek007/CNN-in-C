@@ -7,7 +7,7 @@
 #include "cnn.h"
 
 
-void LiteFace_Model(size_t inputChannels, size_t inputHeight, size_t inputWidth, float* input, float* outputEmbedding){
+void LiteFace_Model(const float* input, float* outputEmbedding){
     float output1[43264];
     CNN_ConvLayer(3, 100, 100, 16, 3, 3, 2, 2, 3, 3, input, lite_face_weight0, lite_face_bias0, output1);
     CNN_BatchNorm(16, 52, 52, output1, lite_face_weight1, lite_face_bias1, lite_face_mean0, lite_face_var0);
