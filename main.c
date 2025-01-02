@@ -5,7 +5,7 @@
 #include "mtcnn_test.h"
 #include "pnet_test.h"
 #include "rnet_test.h"
-
+#include "lite_face_test.h"
 
 int main() {
     printf("Hello, World!\n");
@@ -34,7 +34,9 @@ int main() {
 //    MTCNNTest_DetectFace3();
 //    MTCNNTest_DetectFace4();
 //    return 0;
-
+    LiteFaceTest_Model0();
+    return 0;
+    
     CNNTest_FcLayer0();
     CNNTest_FcLayer1();
     CNNTest_FcLayer2();
